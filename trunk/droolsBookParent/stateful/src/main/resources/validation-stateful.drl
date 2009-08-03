@@ -1,0 +1,87 @@
+package droolsbook.validation
+
+import org.drools.runtime.rule.RuleContext;
+ 
+import java.util.Iterator;
+import java.util.ArrayList; 
+import java.util.List;
+ 
+import droolsbook.bank.model.*;
+import droolsbook.bank.service.*;
+
+global ReportFactory reportFactory;
+global BankingInquiryService inquiryService;
+
+import function droolsbook.stateful.utils.ValidationHelper.error;
+import function droolsbook.stateful.utils.ValidationHelper.warning;
+
+import function droolsbook.bank.service.ValidationHelper.yearsPassedSince;
+
+rule "addressRequired"
+	when
+		Customer( address == null )
+	then
+		warning(drools);
+end
+
+rule "phoneNumberRequired"
+ 	when
+ 		Customer( phoneNumber == null || == "" )		
+	then
+		error(drools);
+end
+
+rule "accountOwnerRequired"
+	when
+		$account : Account( owner == null )		
+	then		
+		error(drools, $account);
+end
+
+rule "studentAccountCustomerAgeLessThan"
+	when				
+		Customer( eval (yearsPassedSince(dateOfBirth) >= 27) )
+		$account : Account( type == Account.Type.STUDENT )		
+	then
+		error(drools, $account);
+end
+
+rule "accountBalanceAtLeast"
+	when
+		$account : Account( balance < 100 )		
+	then		
+		warning(drools, $account);
+end 
+
+rule "accountNumberUnique"
+	when
+		$account : Account(eval(
+			!inquiryService.isAccountNumberUnique($account)))		
+	then
+		error(drools, $account);
+end
+
+
+// @extract-start 05 12
+query getAllMessages
+	$message : Message( )
+end
+// @extract-end
+
+
+
+global droolsbook.stateful.bank.service.impl.StatefulDefaultValidationReport validationReport;
+
+// @extract-start 05 18
+rule createValidationReport
+salience -1000 //should be the last rule to fire
+	when
+		$messages : ArrayList( ) from collect( Message() )
+	then
+		validationReport.reset();
+		for(Message message : (List<Message>) $messages) {
+			validationReport.addMessage(message);
+		}
+end
+// @extract-end
+

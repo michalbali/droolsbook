@@ -1,0 +1,23 @@
+package droolsbook.performance
+
+import droolsbook.bank.model.*; 
+ 
+rule noCustomer
+	when		
+		not Customer()
+		//eval(false)
+	then
+		System.out.println("No customers");
+end
+
+/*
+rule noCustomer
+	when		
+		not (
+			Customer() and
+			Account()
+		)		
+	then
+		System.out.println("No customers");
+end
+*/

@@ -1,0 +1,133 @@
+package droolsbook.dsl.etl;
+
+import java.util.*;
+import java.math.BigDecimal;
+
+import droolsbook.transform.service.LegacyBankService;
+import droolsbook.bank.model.Address;
+import droolsbook.bank.model.Address.Country;
+
+global LegacyBankService legacyService;
+
+//stuff for reporting:
+import droolsbook.bank.service.*;
+
+global ValidationReport validationReport;
+global ReportFactory reportFactory;
+
+import function droolsbook.bank.service.ValidationHelper.*;
+
+function String getConversionToEurFrom(String currencyFrom) {
+	String conversion = null;
+	if ("USD".equals(currencyFrom)) {
+		conversion = "0.670";
+	} else if ("SKK".equals(currencyFrom)) {
+		conversion = "0.033";
+	}
+	return conversion;
+}
+
+expander etl-iBatis.dsl
+
+/*
+>rule findAddress
+>dialect "mvel"
+>	when
+>		Customer has legacy Address
+>	then
+>		load legacy Address	
+>end
+*/
+
+rule findAddress
+dialect "mvel"
+	when
+>		$customerMap : Map( this["_type_"] == "Customer" )
+>		$addressMap : Map( ) 
+>			from legacyService.findAddressByCustomerId( 
+>				$customerMap["customer_id"] )		
+	then		
+>		$addressMap["_type_"] = "Address"
+>		insert( $addressMap )
+end
+
+/*
+>rule findAccount
+>dialect "mvel"
+>	when
+>		Customer has legacy Account
+>	then		
+>		load legacy Account	
+>end
+*/
+
+// @extract-start 04 04
+rule twoEqualAddressesDifferentInstance
+	when
+		There is legacy Address-1
+		There is legacy Address-2
+		- same as legacy Address-1		
+	then
+		remove legacy Address-2
+		Display WARNING for legacy Address-2 
+end
+// @extract-end
+
+// @extract-start 04 05
+rule addressNormalizationUSA
+	when
+		There is legacy Address-1
+		- country is one of "US", "U.S.", "USA", "U.S.A"		
+	then
+		for legacy Address-1 set country to USA 
+end
+// @extract-end
+
+rule addressNormalizationIreland
+	when
+		There is legacy Address-1
+		- country is one of "Ireland", "Republic of Ireland"		
+	then
+		for legacy Address-1 set country to Ireland 
+end
+
+#maybe experiment with agenda-groups instead of salience
+// @extract-start 04 06
+rule unknownCountry
+Apply after address normalizations
+	when
+		There is legacy Address-1
+		- country is not normalized 
+	then
+		Display ERROR for legacy Address-1
+end
+// @extract-end
+
+rule noCurrencyToEUR
+	when
+		There is legacy Account-1
+		- has no currency
+	then
+		for legacy Account-1 set currency to "EUR"
+end
+
+rule reduceLegacyAccounts
+Apply after currency conversions
+	when
+		There is legacy Account-1
+		There is legacy Account-2
+		- "customer_id" is same as in legacy Account-1		
+	then
+		for legacy Account-1 set balance to sum balances
+		remove legacy Account-2
+end
+
+rule unknownCurrency
+	when
+		There is legacy Account-1
+		- has currency different to EUR
+		unknown conversion value for this currency		
+	then
+		 Display ERROR for legacy Account-1
+end
+

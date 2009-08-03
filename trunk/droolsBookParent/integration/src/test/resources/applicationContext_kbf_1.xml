@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="
+       http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd">
+
+  <bean name="validationKnowledge"
+    class="droolsbook.integration.spring.KnowledgeBaseFactoryBean">
+    <description>validation knowledge base factory bean
+    </description>
+    <constructor-arg>
+      <map>
+        <entry key="classpath:validation.drl" value="DRL" />
+      </map>
+    </constructor-arg>
+  </bean>
+  
+  <bean name="multipleKnowledge"
+    class="droolsbook.integration.spring.KnowledgeBaseFactoryBean">
+    <description>multiple knowledge base factory bean
+    </description>
+    <constructor-arg>
+      <map>
+        <entry key="classpath:validation.drl" value="DRL" />
+        <entry key="classpath:test.rf" value="DRF" />
+      </map>
+    </constructor-arg>
+  </bean>
+
+</beans>

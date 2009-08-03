@@ -1,0 +1,255 @@
+// @extract-start 03 04
+package droolsbook.transform;
+
+import java.util.*;
+
+import droolsbook.transform.service.LegacyBankService;
+import droolsbook.bank.model.Address;
+import droolsbook.bank.model.Address.Country;
+
+global LegacyBankService legacyService;
+
+rule findAllCustomers
+dialect "mvel"
+	when
+		$customerMap : Map( ) 
+			from legacyService.findAllCustomers()		
+	then	
+		$customerMap["_type_"] = "Customer"	
+		insert( $customerMap )
+end
+// @extract-end
+
+
+//stuff for reporting:
+import droolsbook.bank.service.*;
+
+global ValidationReport validationReport;
+global ReportFactory reportFactory;
+
+import function droolsbook.bank.service.ValidationHelper.*;
+
+
+
+// @extract-start 03 05
+rule findAddress
+dialect "mvel"
+	when
+		$customerMap : Map( this["_type_"] == "Customer" )
+		$addressMap : Map( ) 
+			from legacyService.findAddressByCustomerId( 
+				$customerMap["customer_id"] )		
+	then		
+		$addressMap["_type_"] = "Address"
+		insert( $addressMap )
+end
+// @extract-end
+
+rule findAccount
+dialect "mvel"
+	when
+		$customerMap : Map( this["_type_"] == "Customer" )
+		$accountMap : Map( ) from legacyService.findAccountByCustomerId( $customerMap["customer_id"])		
+	then		
+		$accountMap["_type_"] = "Account"
+		insert( $accountMap )
+end
+
+// @extract-start 03 07
+rule twoEqualAddressesDifferentInstance
+	when
+		$addressMap1 : Map( this["_type_"] == "Address" )
+		$addressMap2 : Map( this["_type_"] == "Address", 
+			eval( $addressMap1 != $addressMap2 ), 
+			this == $addressMap1 )
+	then
+		retract( $addressMap2 );
+		validationReport.addMessage(
+			reportFactory.createMessage(Message.Type.WARNING, 
+			kcontext.getRule().getName(), $addressMap2));
+end
+// @extract-end
+
+rule twoOrMoreAddresses
+salience -10 //should fire after the redundant address rule 
+	when
+		//$customerMap : Map( this["_type_"] == "Customer" )
+		$addressMap1 : Map( this["_type_"] == "Address"//, 
+		//	this["parent_id"] == $customerMap["customer_id"] 
+		)
+		$addressMap2 : Map( this["_type_"] == "Address", 
+		//	this["parent_id"] == $customerMap["customer_id"],  
+			this != $addressMap1 )
+	then
+		//error report that there are two addresses
+		validationReport.addMessage(
+			reportFactory.createMessage(Message.Type.ERROR, 
+			kcontext.getRule().getName(), //$customerMap, 
+			$addressMap1, $addressMap2));
+end
+
+// @extract-start 03 06
+rule addressNormalizationUSA
+dialect "mvel"
+	when
+		$addressMap : Map( this["_type_"] == "Address", 
+			this["country"] in ("US", "U.S.", "USA", "U.S.A"))
+	then
+		modify( $addressMap ) {
+			put("country", Country.USA)
+		}
+end
+// @extract-end
+
+rule addressNormalizationIreland
+dialect "mvel"
+	when
+		$addressMap : Map( this["_type_"] == "Address",
+			this["country"] in ("Ireland", 
+			"Republic of Ireland") )
+	then
+		modify( $addressMap ) {
+			put("country", Country.Ireland)
+		}
+end
+
+// @extract-start 03 24
+rule unknownCountry
+salience -10 //should fire after address normalizations
+	when
+		$addressMap : Map( this["_type_"] == "Address",
+		    eval(!($addressMap.get("country") instanceof 
+		    Address.Country)))
+	then
+		validationReport.addMessage(
+			reportFactory.createMessage(Message.Type.ERROR, 
+			kcontext.getRule().getName(), $addressMap));
+end
+// @extract-end
+
+rule customerName
+	when
+		//$customerMap : Map( name matches "^.+ .+$" ) //has space inside
+	then
+		//modify($customerMap) {
+		//this["name_"] = $lCustomer.name.split[0];
+		//} 
+end
+
+
+rule noCurrencyToEUR
+dialect "mvel"
+	when
+		$accountMap : Map( this["_type_"] == "Account", 
+			this["currency"] == null )
+	then
+		modify($accountMap) {
+			put("currency", "EUR")
+		}
+end
+
+import java.math.BigDecimal;
+// @extract-start 03 17
+function String getConversionToEurFrom(String currencyFrom) {
+	String conversion = null;
+	if ("USD".equals(currencyFrom)) {
+		conversion = "0.670";
+	} else if ("SKK".equals(currencyFrom)) {
+		conversion = "0.033";
+	}
+	return conversion;
+}
+// @extract-end
+
+// @extract-start 03 14
+rule currencyConversionToEUR
+	when
+		$accountMap : Map( this["_type_"] == "Account", 
+			this["currency"] != null && != "EUR" )
+		$conversionAmount : String() from 
+			getConversionToEurFrom($accountMap["currency"])
+	then
+		modify($accountMap) {
+			put("currency", "EUR"),	 
+			put("balance", new BigDecimal(
+				$conversionAmount).multiply(new BigDecimal(
+				(String)$accountMap.get("balance"))))
+		} 
+end
+// @extract-end
+
+// @extract-start 03 15
+rule unknownCurrency
+	when
+		$accountMap : Map( this["_type_"] == "Account", 
+			this["currency"] != null && != "EUR" )
+		not( String() from 
+			getConversionToEurFrom($accountMap["currency"]) )
+	then
+		 validationReport.addMessage(
+			reportFactory.createMessage(Message.Type.ERROR, 
+			kcontext.getRule().getName(), $accountMap));
+end
+// @extract-end
+
+/* doesn't work with mvel, it keeps casting it to Integer or Float
+rule currencyConversionToEUR
+dialect "mvel"
+	when
+		$accountMap : Map( this["_type_"] == "Account", 
+			this["currency"] != null && != "EUR" )
+	then
+		modify($accountMap) {
+			this["currency"] = "EUR",	 
+			this["balance"] = (BigDecimal) new BigDecimal($accountMap.get("balance")).multiply(getConversionToEurFrom($accountMap.get("balance")))
+		} 
+end
+*/
+
+
+/*
+rule noLegacyAccount
+dialect "mvel"
+	when
+		$lCustomer : LegacyCustomer( )
+		not LegacyAccount( customerId == $lCustomer.id )
+	then
+		//create default account
+		LegacyAccount account = new LegacyAccount()		
+		insert(account) 
+end
+*/
+
+// @extract-start 03 18
+rule reduceLegacyAccounts
+	when
+		$accountMap1 : Map( this["_type_"] == "Account" )
+		$accountMap2 : Map( this["_type_"] == "Account", 
+			eval( $accountMap1 != $accountMap2 ), 
+			this["customer_id"] ==$accountMap1["customer_id"],
+			this["currency"] == $accountMap1["currency"])
+	then
+		modify($accountMap1) {
+			put("balance", (
+				(BigDecimal)$accountMap1.get("balance")).add(
+				(BigDecimal)$accountMap2.get("balance")))
+		} 
+		retract( $accountMap2 );
+end
+// @extract-end
+
+// @extract-start 03 11
+query getCustomer
+	$customerMap : Map( this["_type_"] == "Customer" )
+end
+
+query getAccountByCustomerId (Map customerMap)
+	$accountMap : Map( this["_type_"] == "Account", 
+		this["customer_id"] == customerMap["customer_id"] )
+end
+// @extract-end
+
+query getAddressByCustomerId (Map customerMap)
+	$addressMap : Map( this["_type_"] == "Address", 
+		this["parent_id"] == customerMap["customer_id"] )
+end

@@ -1,0 +1,140 @@
+package droolsbook.decisiontables;
+#generated from Decision Table
+import droolsbook.decisiontables.bank.model.Account;
+import droolsbook.bank.model.Customer;
+import droolsbook.bank.model.Account.Type;
+import java.math.*;
+#From row number: 10
+rule "Interest Calculation_10"
+	
+	when
+		$a:Account(type == Account.Type.TRANSACTIONAL, currency == "EUR")
+	then
+		$a.setInterestRate(new BigDecimal("0.01"));
+end
+
+#From row number: 11
+rule "Interest Calculation_11"
+	
+	when
+		$a:Account(type == Account.Type.STUDENT, currency == "EUR", balance >= 0 && < 2000)
+	then
+		$a.setInterestRate(new BigDecimal("1.00"));
+end
+
+#From row number: 12
+rule "Interest Calculation_12"
+	
+	when
+		$a:Account(type == Account.Type.SAVINGS, currency == "EUR", balance >= 0 && < 100, monthsBetweenStartAndEndDate >= 0 && < 1)
+	then
+		$a.setInterestRate(new BigDecimal("0.00"));
+end
+
+#From row number: 13
+rule "Interest Calculation_13"
+	
+	when
+		$a:Account(type == Account.Type.SAVINGS, currency == "EUR", balance >= 0 && < 100, monthsBetweenStartAndEndDate >= 1 && < 3)
+	then
+		$a.setInterestRate(new BigDecimal("0.10"));
+end
+
+#From row number: 14
+rule "Interest Calculation_14"
+	
+	when
+		$a:Account(type == Account.Type.SAVINGS, currency == "EUR", balance >= 0 && < 100, monthsBetweenStartAndEndDate >= 3 && < 12)
+	then
+		$a.setInterestRate(new BigDecimal("2.00"));
+end
+
+#From row number: 15
+rule "Interest Calculation_15"
+	
+	when
+		$a:Account(type == Account.Type.SAVINGS, currency == "EUR", balance >= 100 && < 1000, monthsBetweenStartAndEndDate >= 0 && < 1)
+	then
+		$a.setInterestRate(new BigDecimal("0.10"));
+end
+
+#From row number: 16
+rule "Interest Calculation_16"
+	
+	when
+		$a:Account(type == Account.Type.SAVINGS, currency == "EUR", balance >= 100 && < 1000, monthsBetweenStartAndEndDate >= 1 && < 3)
+	then
+		$a.setInterestRate(new BigDecimal("3.00"));
+end
+
+#From row number: 17
+rule "Interest Calculation_17"
+	
+	when
+		$a:Account(type == Account.Type.SAVINGS, currency == "EUR", balance >= 100 && < 1000, monthsBetweenStartAndEndDate >= 3 && < 12)
+	then
+		$a.setInterestRate(new BigDecimal("3.25"));
+end
+
+#From row number: 18
+rule "Interest Calculation_18"
+	
+	when
+		$a:Account(type == Account.Type.SAVINGS, currency == "EUR", balance >= 1000 && < 5000, monthsBetweenStartAndEndDate >= 0 && < 1)
+	then
+		$a.setInterestRate(new BigDecimal("0.10"));
+end
+
+#From row number: 19
+rule "Interest Calculation_19"
+	
+	when
+		$a:Account(type == Account.Type.SAVINGS, currency == "EUR", balance >= 1000 && < 5000, monthsBetweenStartAndEndDate >= 1 && < 3)
+	then
+		$a.setInterestRate(new BigDecimal("3.25"));
+end
+
+#From row number: 20
+rule "Interest Calculation_20"
+	
+	when
+		$a:Account(type == Account.Type.SAVINGS, currency == "EUR", balance >= 1000 && < 5000, monthsBetweenStartAndEndDate >= 3 && < 12)
+	then
+		$a.setInterestRate(new BigDecimal("3.50"));
+end
+
+#From row number: 21
+rule "Interest Calculation_21"
+	
+	when
+		$a:Account(type == Account.Type.SAVINGS, currency == "EUR", balance >= 5000 && < 10000, monthsBetweenStartAndEndDate >= 0 && < 1)
+	then
+		$a.setInterestRate(new BigDecimal("0.10"));
+end
+
+#From row number: 22
+rule "Interest Calculation_22"
+	
+	when
+		$a:Account(type == Account.Type.SAVINGS, currency == "EUR", balance >= 5000 && < 10000, monthsBetweenStartAndEndDate >= 1 && < 3)
+	then
+		$a.setInterestRate(new BigDecimal("3.50"));
+end
+
+#From row number: 23
+rule "Interest Calculation_23"
+	
+	when
+		$a:Account(type == Account.Type.SAVINGS, currency == "EUR", balance >= 5000 && < 10000, monthsBetweenStartAndEndDate >= 3 && < 12)
+	then
+		$a.setInterestRate(new BigDecimal("3.75"));
+end
+
+#From row number: 24
+rule "Interest Calculation_24"
+	
+	when
+		$a:Account(type == Account.Type.SAVINGS, currency == "USD", balance >= 0 && < 100, monthsBetweenStartAndEndDate >= 0 && < 1)
+	then
+		$a.setInterestRate(new BigDecimal("0.00"));
+end

@@ -1,0 +1,169 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xmlns:aop="http://www.springframework.org/schema/aop"
+  xmlns:tx="http://www.springframework.org/schema/tx"
+  xsi:schemaLocation="
+       http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
+       http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-2.5.xsd
+       http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-2.5.xsd">
+
+<bean id="transactionManager"
+  class="org.springframework.transaction.jta.JtaTransactionManager" />
+    
+       
+<aop:config>
+  <aop:pointcut id="bankingServiceMethods"
+    expression="execution(*
+  droolsbook.bank.service.BankingService.*(..))" />
+
+  <aop:pointcut id="knowledgeSessionLookupMethods"
+    expression="execution(* droolsbook.org.drools.persistence.KnowledgeSessionLookup.*(..))" />
+
+
+  <aop:advisor advice-ref="transactionAdvice"
+    pointcut-ref="bankingServiceMethods" />
+
+  <aop:advisor pointcut-ref="knowledgeSessionLookupMethods"
+    advice-ref="noTransactionAdvice" />
+</aop:config>
+
+<tx:advice id="transactionAdvice" 
+  transaction-manager="transactionManager">    
+  <tx:attributes>
+    <tx:method name="*" rollback-for="Exception" />
+  </tx:attributes>
+</tx:advice>
+
+<tx:advice id="noTransactionAdvice">
+  <tx:attributes>
+    <tx:method name="*" propagation="NOT_SUPPORTED"/>
+  </tx:attributes>
+</tx:advice>
+  
+  
+ 
+<bean id="entityManagerFactory"
+  class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean">
+  <property name="persistenceUnitName"
+    value="droolsbook.persistence" />
+  <property name="jpaPropertyMap" ref="jpaPropertyMap" />
+</bean>
+
+<bean id="jpaPropertyMap" class="org.springframework.beans.factory.config.MapFactoryBean">
+  <property name="sourceMap">
+    <map>
+      <entry key="hibernate.dialect" 
+        value="org.hibernate.dialect.H2Dialect" />
+      <entry key="hibernate.show_sql"  value="true" />
+      <entry key="hibernate.format_sql" value="true" />
+      <entry key="hibernate.use_sql_comments" value="true"/>
+      <entry key="hibernate.hbm2ddl.auto" 
+        value="create-drop" />     
+      <entry key="hibernate.transaction.manager_lookup_class" value="org.hibernate.transaction.BTMTransactionManagerLookup" />     
+    </map>
+  </property>
+</bean>
+  
+<bean id="droolsEntityManagerFactory"
+  class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean">
+  <property name="persistenceUnitName" 
+    value="org.drools.persistence.jpa" />
+  <property name="jpaPropertyMap" ref="jpaPropertyMap" />
+</bean>
+
+ 
+<bean id="knowledgeSessionLookup" init-method="init"
+  class="droolsbook.org.drools.persistence.JPAKnowledgeSessionLookup" > 
+  <property name="knowledgeBase" 
+    ref="loanApprovalKnowledge" />
+  <property name="emailHandler" ref="emailWorkItemHandler"/>
+  <property name="humanTaskHandler" 
+    ref="approveLoanWorkItemHandler"/>
+  <property name="transferFundsHandler" 
+    ref="transferFundsWorkItemHandler"/>
+</bean>
+
+  <bean name="emailWorkItemHandler" class="org.drools.process.instance.impl.demo.SystemOutWorkItemHandler" />
+  <bean name="transferFundsWorkItemHandler" class="org.drools.process.instance.impl.demo.SystemOutWorkItemHandler" />
+  <bean name="approveLoanWorkItemHandler" class="droolsbook.sampleApplication.drools.persistence.JPAWSHumanTaskHandler" >
+    <property name="transactionTemplate" 
+      ref="transactionTemplate" />
+    <property name="knowledgeSessionLookup" 
+      ref="knowledgeSessionLookup" />
+  </bean> 
+  
+<bean id="transactionTemplate" class="org.springframework.transaction.support.TransactionTemplate">
+    <property name="transactionManager" 
+      ref="transactionManager" />
+</bean>
+
+
+<bean name="bankingFactory" 
+  class="droolsbook.bank.model.DefaultBankingFactory" />
+<bean name="reportFactory"
+  class="droolsbook.bank.service.impl.DefaultReportFactory" />
+
+<bean class="org.springframework.orm.jpa.support.PersistenceAnnotationBeanPostProcessor" />
+<bean name="customerRepository"
+  class="droolsbook.sampleApplication.repository.jpa.JPACustomerRepository" />
+
+
+<bean name="validationKnowledge"
+  class="droolsbook.integration.spring.KnowledgeBaseFactoryBean">
+  <description>validation knowledge base factory bean
+  </description>
+  <constructor-arg>
+    <map>
+      <entry key="classpath:validation.drl" value="DRL" />
+    </map>
+  </constructor-arg>
+</bean>
+  
+  
+<bean name="loanApprovalKnowledge" class="droolsbook.integration.spring.KnowledgeBaseFactoryBean">
+  <description>loan approval knowledge base factory bean
+  </description>
+  <constructor-arg>
+    <map>
+      <entry key="classpath:loanApproval.drl" value="DRL" />
+      <entry key="classpath:loanApproval.rf" value="DRF" />
+      <entry key="classpath:ratingCalculation.drl" 
+        value="DRL" />
+      <entry key="classpath:ratingCalculation.rf" 
+        value="DRF" />
+    </map>
+  </constructor-arg>
+</bean>
+
+
+<bean name="validationService"
+  class="droolsbook.bank.service.impl.BankingValidationServiceImpl">
+  <property name="reportFactory" ref="reportFactory" />
+  <property name="knowledgeBase" ref="validationKnowledge"/>
+</bean>
+
+<bean name="loanApprovalService"
+ class="droolsbook.bank.service.impl.LoanApprovalServiceImpl">
+ <property name="sessionLookup" ref="knowledgeSessionLookup"/>
+ <property name="approveLoanHandler" 
+    ref="approveLoanWorkItemHandler" />
+</bean>
+  
+  <bean name="cepService" class="droolsbook.bank.service.impl.CEPServiceImpl">
+    
+  </bean>
+
+
+<bean name="bankingService"
+  class="droolsbook.bank.service.impl.BankingServiceImpl">
+  <property name="customerRepository" 
+    ref="customerRepository" />
+  <property name="validationService" 
+    ref="validationService" />
+  <property name="loanApprovalService" 
+    ref="loanApprovalService" />
+  <property name="cepService" ref="cepService" />  
+</bean>
+
+</beans>

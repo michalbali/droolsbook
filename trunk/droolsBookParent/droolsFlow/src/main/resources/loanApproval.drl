@@ -1,0 +1,25 @@
+package droolsbook.droolsflow.loan
+
+import droolsbook.droolsflow.model.*
+import droolsbook.bank.model.*
+import droolsbook.bank.service.*
+
+import org.drools.runtime.process.ProcessInstance
+
+global ValidationReport validationReport
+
+rule amountNotValid
+ruleflow-group "validateLoan"
+	when
+		Loan(amount == null || amount < 0)
+	then
+		insert(new DefaultMessage());
+end
+
+rule durationYearsNotValid
+ruleflow-group "validateLoan"
+	when
+		Loan(durationYears == null || durationYears < 0)
+	then
+		insert(new DefaultMessage());
+end

@@ -1,0 +1,7 @@
+<Context>
+
+    <Resource name="jdbc/testDS1" auth="Container" type="javax.sql.DataSource"
+        factory="bitronix.tm.resource.ResourceObjectFactory" uniqueName="jdbc/testDS1" />
+
+</Context>
+

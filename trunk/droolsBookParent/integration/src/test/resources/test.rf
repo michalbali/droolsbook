@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?> 
+<process xmlns="http://drools.org/drools-5.0/process"
+         xmlns:xs="http://www.w3.org/2001/XMLSchema-instance"
+         xs:schemaLocation="http://drools.org/drools-5.0/process drools-processes-5.0.xsd"
+         type="RuleFlow" name="test" id="testProcess" package-name="droolsbook.sample" >
+
+  <header>
+  </header>
+
+  <nodes>
+    <end id="2" name="End" x="245" y="286" />
+    <ruleSet id="3" name="RuleSet" x="179" y="203" ruleFlowGroup="ruleSet" />
+    <start id="4" name="Start" x="135" y="92" />
+  </nodes>
+
+  <connections>
+    <connection from="3" to="2" />
+    <connection from="4" to="3" />
+  </connections>
+
+</process>
