@@ -197,11 +197,9 @@
     -->
   </repositories>
   <scm>
-    <!-- http://droolsbook.googlecode.com/svn/trunk -->
-    <connection>scm:svn:http://127.0.0.1/svn/testrepo/droolsBookTest/trunk</connection>
-    <!-- https://droolsbook.googlecode.com/svn/trunk -->
-    <developerConnection>scm:svn:http://127.0.0.1/svn/testrepo/droolsBookTest/trunk</developerConnection>
-    <url>http://127.0.0.1/svn/testrepo/droolsBookTest/trunk</url>        
+    <connection>scm:svn:http://droolsbook.googlecode.com/svn/trunk</connection>
+    <developerConnection>scm:svn:https://droolsbook.googlecode.com/svn/trunk</developerConnection>
+    <url>http://droolsbook.googlecode.com/svn/trunk</url>        
   </scm>
   <properties>
     <drools.ver>5.0.1</drools.ver>
