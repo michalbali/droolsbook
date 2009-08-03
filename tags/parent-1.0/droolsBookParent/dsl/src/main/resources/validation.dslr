@@ -1,0 +1,50 @@
+package droolsbook.dsl;
+
+import droolsbook.bank.model.*;
+import droolsbook.bank.service.*;
+
+import function droolsbook.bank.service.ValidationHelper.*;
+
+global ValidationReport validationReport;
+global ReportFactory reportFactory;
+global BankingInquiryService inquiryService;
+
+expander validation.dsl
+
+#rule simpleRule
+#	when
+#		There is a Customer with phone number of "02-111-33333333"	
+#	then
+#		Log : "02 111 333 is in the rule session."	
+#end
+
+#rule "address is required"
+rule addressRequired
+	when
+		The Customer
+		- has no address
+	then
+		Display warning	
+end
+
+#- addressRequired : when The Customer does not have address 
+#					then Display warning	
+
+#rule "phone number is required"
+rule phoneNumberRequired
+	when
+		The Customer
+		- has no phone number or it is blank
+	then
+		Display error
+end
+
+#rule "account owner is required"
+rule accountOwnerRequired
+	when
+		The Account
+		- has no owner
+	then		
+		Display error for Account
+end
+ 

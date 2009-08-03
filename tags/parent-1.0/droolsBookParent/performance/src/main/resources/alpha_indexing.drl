@@ -1,0 +1,37 @@
+package droolsbook.performance
+
+import droolsbook.bank.model.*; 
+ 
+rule accountEUR
+	when
+		$account : Account( currency == "EUR" )		
+	then		
+		//warning(kcontext, $account);
+		System.out.println("EUR");
+end
+
+rule accountUSD
+	when
+		$account : Account( currency == "USD" )		
+	then		
+		//warning(kcontext, $account);
+		System.out.println("USD");
+end
+
+rule accountGBP
+	when
+		$account : Account( currency == "GBP" )		
+	then		
+		//warning(kcontext, $account);
+		System.out.println("GBP");
+end
+
+rule accountAUD
+	when
+		$account : Account( currency == "AUD" )		
+	then		
+		//warning(kcontext, $account);
+		System.out.println("AUD");
+end
+
+

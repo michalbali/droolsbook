@@ -1,0 +1,57 @@
+package droolsbook.droolsflow.loan
+
+import droolsbook.bank.model.*
+import droolsbook.droolsflow.model.*
+
+import org.drools.process.instance.impl.ProcessInstanceImpl
+import org.drools.process.instance.context.variable.VariableScopeInstance
+import org.drools.process.core.context.variable.VariableScope
+
+import org.drools.runtime.process.WorkflowProcessInstance
+
+
+rule ruleOnParentProcessInstance
+ruleflow-group "calculateRating"
+dialect "mvel" 
+  when		
+    //$processInstance : ProcessInstanceImpl( )
+    //VariableScopeInstance(variables["customerLoanRating"] >= 
+    //  1000) from $processInstance.getContextInstance(
+    //  VariableScope.VARIABLE_SCOPE)
+    //processInstance : WorkflowProcessInstance( variable["customerLoanRating"] >= 1000 )
+    
+    //code constraint: 
+    //((Integer)customerLoanRating) >= 1000
+    
+    //rule constraint:
+processInstance : WorkflowProcessInstance( 
+  eval( ((Integer)processInstance.getVariable(
+  "customerLoanRating")) >= 1000 ))
+    
+  then
+    System.out.println("calculateRating");
+end
+
+
+rule ruleOnLoan
+ruleflow-group "calculateRating"
+  when		
+    Loan(  )
+  then
+    System.out.println("!!!! calculateRating");
+end
+
+rule calculateRating
+ruleflow-group "calculateRating"
+	when
+		eval(true) //this needs to be here otherwise the knowledgebase fails to serialize; this might be an issue with current snapshot
+		not Rating()
+	then
+		Rating rating = new Rating();
+		rating.setRating(Integer.valueOf(1500));
+		insert(rating);
+end
+
+
+
+

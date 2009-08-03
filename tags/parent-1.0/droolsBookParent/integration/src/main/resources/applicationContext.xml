@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="
+       http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd">
+
+<bean id="validationKnowledgeBase" 
+  class="org.drools.ioc.spring.KnowledgeBaseFactoryBean">
+  <property name="resources">
+    <list>
+      <bean
+        class="org.drools.ioc.spring.KnowledgeResourceFactoryBean">
+        <property name="knowledgeType" value="DRL" />
+        <property name="source"
+          value="file:src/main/resources/validation.drl" />
+      </bean>
+    </list>
+  </property>
+</bean>
+
+</beans>

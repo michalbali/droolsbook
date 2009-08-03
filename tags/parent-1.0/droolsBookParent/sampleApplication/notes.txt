@@ -1,0 +1,1 @@
+-Dbtm.root=${workspace_loc}/apache-tomcat-6.0.18 -Dbitronix.tm.configuration=${workspace_loc}/apache-tomcat-6.0.18/conf/btm-config.properties
