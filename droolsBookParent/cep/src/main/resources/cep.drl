@@ -1,0 +1,247 @@
+package droolsbook.cep
+
+import droolsbook.cep.bank.model.TransactionCreatedEvent
+import droolsbook.cep.bank.model.AccountUpdatedEvent
+import droolsbook.cep.bank.model.Account
+import droolsbook.cep.bank.model.LostCardEvent
+import droolsbook.cep.bank.model.SuspiciousAccount
+import droolsbook.cep.bank.model.SuspiciousTransaction
+import droolsbook.cep.bank.model.TransactionEvent
+import droolsbook.cep.bank.model.TransactionCompletedEvent
+import droolsbook.cep.bank.model.SuspiciousAccount.SuspiciousAccountSeverity
+import droolsbook.cep.bank.model.SuspiciousTransaction.SuspiciousTransactionSeverity
+import droolsbook.bank.model.Address
+import droolsbook.bank.model.Customer
+import droolsbook.bank.model.Transaction
+
+import java.util.List
+import java.math.BigDecimal
+
+global List accountNumberBlackList
+
+declare LostCardEvent
+	@role( event )
+end
+
+declare TransactionCreatedEvent
+	@role( event )
+	@expires( 90s ) //need to explicitly set this
+end
+
+declare TransactionCompletedEvent
+	@role( event )
+end
+
+declare AccountUpdatedEvent
+	@role( event )
+end
+
+declare SuspiciousAccount
+	@role( event )
+end
+
+declare SuspiciousTransaction
+	@role( event )
+end
+
+// @extract-start 06 01
+rule notification
+	when
+		$account : Account( status != Account.Status.BLOCKED )	
+		LostCardEvent( accountNumber == $account.number ) 
+		  from entry-point LostCardStream
+	then
+		modify($account) {
+			setStatus(Account.Status.BLOCKED)
+		};
+end
+// @extract-end 
+
+//fire on at leat three withdrawals happening over 3 minutes 
+//that leave an account with 10% of its average balance over a month
+// @extract-start 06 09 
+rule sequenceOfIncreasingWithdrawals
+  when
+    $account:Account($number : number)
+    $t1:TransactionCreatedEvent(fromAccountNumber == $number)
+      from entry-point TransactionStream    
+    $t2:TransactionCreatedEvent(amount > $t1.amount, 
+      fromAccountNumber == $number, this after[0, 3m] $t1)
+      from entry-point TransactionStream
+    not (TransactionCreatedEvent(fromAccountNumber == $number,
+      this after $t1, this before $t2 ) 
+      from entry-point TransactionStream)
+    $t3:TransactionCreatedEvent(amount > $t2.amount, 
+      fromAccountNumber == $number, this after[0, 3m] $t2 )
+      from entry-point TransactionStream
+    not (TransactionCreatedEvent(fromAccountNumber == $number,
+      this after $t2, this before $t3 ) 
+      from entry-point TransactionStream)
+    $ai : AccountInfo(number == $number, eval($t1.amount.add(
+      $t2.amount).add($t3.amount).compareTo(BigDecimal.
+      valueOf(0.90).multiply(averageBalance)) > 0))
+  then
+    insert(new SuspiciousAccount($number, 
+      SuspiciousAccountSeverity.MAJOR));
+    insert(new SuspiciousTransaction($t1.transactionUuid, 
+      SuspiciousTransactionSeverity.MAJOR));
+    insert(new SuspiciousTransaction($t2.transactionUuid, 
+      SuspiciousTransactionSeverity.MAJOR));
+    insert(new SuspiciousTransaction($t3.transactionUuid, 
+      SuspiciousTransactionSeverity.MAJOR));
+end 
+// @extract-end
+
+/*
+// @extract-start 06 23
+declare AccountInfo
+	number : Long
+	averageBalance : BigDecimal
+	averageAmount : BigDecimal
+end
+// @extract-end
+*/
+
+declare AccountInfo
+	number : Long
+	averageBalance : BigDecimal
+	averageAmount : BigDecimal
+	averageNumberOfTransactions : BigDecimal
+	numberOfTransactions1Day : Long
+end
+
+/*
+// @extract-start 06 18
+rule averageBalanceOver30Days
+no-loop true
+  when
+    $account : Account( )
+    $averageBalance : BigDecimal( ) from accumulate(
+      AccountUpdatedEvent( accountNumber == $account.number, 
+      $balance : balance ) over window:time( 30d ) 
+      from entry-point AccountStream, average( $balance ) )
+    $accountInfo : AccountInfo( number == $account.number )
+  then
+    modify($accountInfo) {
+    	setAverageBalance($averageBalance)
+    };
+end
+// @extract-end
+*/
+rule averageBalanceOver30Days
+no-loop true
+  when
+    $account : Account( )
+    // @extract-start 06 28
+    $averageBalance : BigDecimal( ) from accumulate(
+      AccountUpdatedEvent( accountNumber == $account.number, 
+      $balance : balance ) over window:time( 30d ) from 
+      entry-point AccountStream, bigDecimalAverage($balance))
+    // @extract-end  
+    $accountInfo : AccountInfo( number == $account.number )		
+  then
+    modify($accountInfo) {
+    	setAverageBalance($averageBalance)
+    };
+end
+/*
+// using full accumulate
+rule averageBalanceOver30Days
+  when
+    $account : Account( )
+    $averageBalance : BigDecimal( ) from accumulate(
+      AccountUpdatedEvent( accountNumber == $account.number, 
+      $balance : balance ) over window:time( 30d ) 
+      from entry-point AccountStream, 
+      init( BigDecimal total = BigDecimal.ZERO; ),
+      action( total = total.add($balance); ),
+      reverse( total = total.subtract($balance); ),
+      result(total) )
+    $accountInfo : AccountInfo( number == $account.number )		
+  then
+    modify($accountInfo) {
+    	setAverageBalance($averageBalance)
+    };
+end
+*/
+
+
+
+query averageBalanceOverMonthQuery (Long $accountNumber)
+	AccountInfo( number == $accountNumber, 
+		$averageBalance : averageBalance )
+end
+
+
+//similar to sequenceOfWithdrawals, however in this case the amounts
+// transfered are averaged over month and if there are three consecutive 
+//withdrawals each of more than three times the average -> raise suspicion
+// @extract-start 06 07  
+rule twoLargeWithdrawals
+dialect "mvel"
+  when
+    $account : Account( )
+    Number( $averageAmount : doubleValue ) from accumulate(
+      TransactionCompletedEvent( fromAccountNumber == 
+      $account.number, $amount : amount ) 
+      over window:time( 30d ) from entry-point 
+      TransactionStream, average( $amount ) )		
+    $t1 : TransactionCreatedEvent( fromAccountNumber == 
+      $account.number, amount > ($averageAmount * 3.00) ) over 
+      window:time(90s) from entry-point TransactionStream
+    $t2 : TransactionCreatedEvent( this != $t1, 
+      fromAccountNumber == $account.number, 
+      amount > ($averageAmount * 3.00) ) over 
+      window:time(90s) from entry-point TransactionStream
+  then
+    insert(new SuspiciousAccount($account.number, 
+      SuspiciousAccountSeverity.MINOR));
+    insert(new SuspiciousTransaction($t1.transactionUuid, 
+      SuspiciousTransactionSeverity.MINOR));
+    insert(new SuspiciousTransaction($t2.transactionUuid, 
+      SuspiciousTransactionSeverity.MINOR));
+end
+// @extract-end
+
+
+//high activity on an account
+//this should catch cases with lot of small transactions
+// @extract-start 06 13
+rule highActivity
+  when
+    $account : Account( )
+    $accountInfo : AccountInfo( number == $account.number,
+      numberOfTransactions1Day > (averageNumberOfTransactions.
+      multiply(BigDecimal.valueOf(5.00))), averageBalance > 
+      ($account.getBalance().multiply(
+      BigDecimal.valueOf(10.00))) )
+  then
+    insert(new SuspiciousAccount($account.getNumber(),
+      SuspiciousAccountSeverity.MINOR));
+end
+// @extract-end
+
+
+//monitoring & reporting rules
+
+
+// @extract-start 06 04
+query averageBalanceQuery
+  Number( $averageBalance : doubleValue ) from accumulate(
+    $account : Account($balance : balance), average($balance))
+end
+// @extract-end
+
+query averageBalanceWithInterestQuery
+  Number( $averageBalance : doubleValue ) from accumulate(
+    $account : Account( ), average($account.getBalance().multiply($account.getInterestRate())) )
+end
+
+rule blackListToCheck
+	when
+		$transaction : Transaction( to.number in (accountNumberBlackList) )
+	then
+		$transaction.setStatus(Transaction.Status.DENIED);
+		//.. do something else?		
+end
+

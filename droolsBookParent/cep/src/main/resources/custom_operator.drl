@@ -1,0 +1,36 @@
+package droolsbook.evaluator
+
+import droolsbook.bank.model.*
+import droolsbook.evaluator.test.CustomersHolder
+
+rule twoFieldsOnOneFact
+	when
+		CustomersHolder( customer1 instanceEquals[] customer2 )
+	then 
+		//System.out.println(drools.getRule().getName());
+end
+
+rule twoFieldsOnOneFactNot
+	when
+		CustomersHolder( customer1 not instanceEquals[] customer2 )
+	then 
+		//System.out.println(drools.getRule().getName());
+end
+
+// @extract-start 06 12
+rule accountHasCustomer
+	when
+		$customer : Customer( )		
+		Account( owner instanceEquals $customer )
+	then 
+		//..
+end
+// @extract-end
+
+rule accountHasCustomerNot
+	when
+		$customer : Customer(  )		
+		Account( owner not instanceEquals[] $customer )
+	then 
+		//..
+end

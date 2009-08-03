@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?> 
+<process xmlns="http://drools.org/drools-5.0/process"
+         xmlns:xs="http://www.w3.org/2001/XMLSchema-instance"
+         xs:schemaLocation="http://drools.org/drools-5.0/process drools-processes-5.0.xsd"
+         type="RuleFlow" name="flow" id="ratingCalculation" package-name="droolsbook.droolsflow.loan" >
+
+  <header>
+  </header>
+
+  <nodes>
+    <start id="1" name="Start" x="148" y="29" width="80" height="40" />
+    <ruleSet id="2" name="Calculate Incomes" x="16" y="160" width="134" height="40" ruleFlowGroup="calculateIncomes" />
+    <ruleSet id="3" name="Calculate Expenses" x="232" y="196" width="148" height="40" ruleFlowGroup="calculateExpenses" />
+    <ruleSet id="4" name="Calculate Rating" x="131" y="316" width="121" height="40" ruleFlowGroup="calculateRating" />
+    <end id="5" name="End" x="154" y="377" width="80" height="40" />
+    <split id="6" name="AND" x="167" y="88" width="41" height="40" type="1" />
+    <join id="7" name="AND" x="170" y="249" width="42" height="40" type="1" />
+    <ruleSet id="8" name="Calculate Monthly Repayments" x="222" y="140" width="218" height="40" ruleFlowGroup="calculateRepayments" />
+  </nodes>
+
+  <connections>
+    <connection from="6" to="2" />
+    <connection from="8" to="3" />
+    <connection from="7" to="4" />
+    <connection from="4" to="5" />
+    <connection from="1" to="6" />
+    <connection from="2" to="7" />
+    <connection from="3" to="7" />
+    <connection from="6" to="8" />
+  </connections>
+
+</process>

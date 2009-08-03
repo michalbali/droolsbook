@@ -1,0 +1,115 @@
+// @extract-start 03 57
+package droolsbook.validation;
+
+import org.drools.runtime.rule.RuleContext;
+ 
+import droolsbook.bank.model.*;
+import droolsbook.bank.service.*;
+
+global ValidationReport validationReport;
+global ReportFactory reportFactory;
+global BankingInquiryService inquiryService;
+
+import function 
+	droolsbook.bank.service.ValidationHelper.error;
+import function 
+	droolsbook.bank.service.ValidationHelper.warning;
+// @extract-end
+
+/*
+// @extract-start 03 63
+import function droolsbook.bank.service.ValidationHelper.*;
+// @extract-end
+*/
+
+
+/*
+function void error(RuleContext kcontext,Object... context) {
+	ValidationReport report = (ValidationReport)kcontext.
+		getWorkingMemory().getGlobal("validationReport");
+	ReportFactory reportFactory = (ReportFactory)kcontext.
+		getWorkingMemory().getGlobal("reportFactory");
+	
+	report.addMessage(reportFactory.createMessage(
+		Message.Type.ERROR,kcontext.getRule().getName(),
+		context));
+}
+
+function void warning(RuleContext kcontext, 
+	Object... context) {
+	ValidationReport report = (ValidationReport)kcontext.
+		getWorkingMemory().getGlobal("validationReport");
+	ReportFactory reportFactory = (ReportFactory)kcontext.
+		getWorkingMemory().getGlobal("reportFactory");
+	
+	report.addMessage(reportFactory.createMessage(
+		Message.Type.WARNING, kcontext.getRule().getName(),
+		context));
+}
+*/
+
+import function droolsbook.bank.service.ValidationHelper.yearsPassedSince;
+
+/*
+import java.util.Date;
+import org.joda.time.DateMidnight;
+import org.joda.time.Years;
+
+function int yearsPassedSince(Date date) {
+    return Years.yearsBetween(new DateMidnight(date), 
+    	new DateMidnight()).getYears();
+}
+*/
+
+
+// @extract-start 03 58
+rule "addressRequired"
+	when
+		Customer( address == null )
+	then
+		warning(kcontext);
+end
+
+rule "phoneNumberRequired"
+ 	when
+ 		Customer( phoneNumber == null || == "" )		
+	then
+		error(kcontext);
+end
+
+rule "accountOwnerRequired"
+	when
+		$account : Account( owner == null )		
+	then		
+		error(kcontext, $account);
+end
+// @extract-end
+
+// @extract-start 03 60
+rule "studentAccountCustomerAgeLessThan"
+	when				
+		Customer( eval (yearsPassedSince(dateOfBirth) >= 27) )
+		$account : Account( type == Account.Type.STUDENT )		
+	then
+		error(kcontext, $account);
+end
+// @extract-end  
+
+// @extract-start 03 59
+rule "accountBalanceAtLeast"
+	when
+		$account : Account( balance < 100 )		
+	then		
+		warning(kcontext, $account);
+end 
+// @extract-end 
+
+// @extract-start 03 61
+rule "accountNumberUnique"
+	when
+		$account : Account(eval(
+			!inquiryService.isAccountNumberUnique($account)))
+	then
+		error(kcontext, $account);
+end
+// @extract-end 

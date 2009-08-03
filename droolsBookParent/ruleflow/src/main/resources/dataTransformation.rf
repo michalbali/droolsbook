@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?> 
+<process xmlns="http://drools.org/drools-5.0/process"
+         xmlns:xs="http://www.w3.org/2001/XMLSchema-instance"
+         xs:schemaLocation="http://drools.org/drools-5.0/process drools-processes-5.0.xsd"
+         type="RuleFlow" name="flow" id="dataTransformation" package-name="droolsbook.ruleflow.transform" routerLayout="2" >
+
+  <header>
+  </header>
+
+  <nodes>
+    <start id="1" name="Start" x="134" y="16" width="80" height="40" />
+    <ruleSet id="2" name="address normalization" x="16" y="160" width="166" height="40" ruleFlowGroup="address normalization" />
+    <ruleSet id="3" name="unknown country" x="97" y="232" width="126" height="40" ruleFlowGroup="unknown country" />
+    <end id="4" name="End" x="209" y="376" width="80" height="40" />
+    <split id="5" name="Split" x="134" y="88" width="80" height="40" type="1" />
+    <ruleSet id="6" name="default" x="214" y="160" width="71" height="40" ruleFlowGroup="default" />
+    <join id="9" name="Join" x="209" y="304" width="80" height="40" type="1" />
+  </nodes>
+
+  <connections>
+    <connection from="5" to="2" />
+    <connection from="2" to="3" />
+    <connection from="9" to="4" />
+    <connection from="1" to="5" />
+    <connection from="5" to="6" />
+    <connection from="6" to="9" />
+    <connection from="3" to="9" />
+  </connections>
+
+</process>

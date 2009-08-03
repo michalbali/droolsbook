@@ -1,0 +1,227 @@
+<?xml version="1.0" encoding="UTF-8"?> 
+<process xmlns="http://drools.org/drools-5.0/process"
+         xmlns:xs="http://www.w3.org/2001/XMLSchema-instance"
+         xs:schemaLocation="http://drools.org/drools-5.0/process drools-processes-5.0.xsd"
+         type="RuleFlow" name="Loan Approval Flow" id="loanApproval" package-name="droolsbook.droolsflow.loan" version="1" >
+
+  <header>
+    <imports>
+      <import name="droolsbook.bank.model.Loan" />
+      <import name="droolsbook.droolsflow.model.DefaultMessage" />
+      <import name="droolsbook.droolsflow.model.Rating" />
+      <import name="droolsbook.bank.service.*" />
+      <import name="org.drools.runtime.process.ProcessInstance" />
+      <import name="org.drools.runtime.process.WorkflowProcessInstance" />
+      <import name="org.drools.process.instance.impl.ProcessInstanceImpl" />
+      <import name="org.drools.process.instance.context.variable.VariableScopeInstance" />
+      <import name="org.drools.process.core.context.variable.VariableScope" />
+      <import name="org.drools.runtime.ClassObjectFilter" />
+    </imports>
+    <variables>
+      <variable name="approvedEvent" >
+        <type name="org.drools.process.core.datatype.impl.type.BooleanDataType" />
+        <value>false</value>
+      </variable>
+      <variable name="customer" >
+        <type name="org.drools.process.core.datatype.impl.type.ObjectDataType" className="droolsbook.bank.model.Customer" />
+      </variable>
+      <variable name="loan" >
+        <type name="org.drools.process.core.datatype.impl.type.ObjectDataType" className="droolsbook.bank.model.Loan" />
+      </variable>
+      <variable name="loanSourceAccount" >
+        <type name="org.drools.process.core.datatype.impl.type.ObjectDataType" className="droolsbook.bank.model.Account" />
+      </variable>
+      <variable name="customerLoanRating" >
+        <type name="org.drools.process.core.datatype.impl.type.IntegerDataType" />
+        <value>0</value>
+      </variable>
+      <variable name="exception" >
+        <type name="org.drools.process.core.datatype.impl.type.ObjectDataType" className="java.lang.Exception" />
+      </variable>
+    </variables>
+    <exceptionHandlers>
+      <exceptionHandler faultName="NotValidFaulttttt" type="action" >
+        <action type="expression" dialect="mvel" >System.out.println("inside not valid fault");</action>
+      </exceptionHandler>
+      <exceptionHandler faultName="java.lang.NullPointerException" type="action" faultVariable="exception" >
+        <action type="expression" dialect="java" >System.out.println("inside nullpointerException handler");
+ProcessInstanceImpl processInstanceImpl = (ProcessInstanceImpl)context.getProcessInstance();
+VariableScopeInstance variableScopeInstance = (VariableScopeInstance) processInstanceImpl.getContextInstance(VariableScope.VARIABLE_SCOPE);
+System.out.println("exception == " + variableScopeInstance.getVariable("exception"));</action>
+      </exceptionHandler>
+    </exceptionHandlers>
+  </header>
+
+  <nodes>
+    <start id="1" name="Start" x="191" y="86" width="70" height="37" />
+    <end id="3" name="End" x="345" y="667" width="66" height="32" />
+    <split id="4" name="Amount to borrow?" x="227" y="229" width="135" height="41" type="2" >
+      <constraints>
+        <constraint toNodeId="7" toType="DROOLS_DEFAULT" name="otherwise" priority="100" type="rule" dialect="mvel" >eval(true)</constraint>
+        <constraint toNodeId="5" toType="DROOLS_DEFAULT" name="low" priority="1" type="rule" dialect="mvel" >Loan( amount &lt;= 5000 )</constraint>
+      </constraints>
+    </split>
+    <join id="5" name="XOR" x="273" y="447" width="43" height="40" type="2" />
+    <subProcess id="7" name="Rating Calcualtion" x="125" y="302" width="143" height="41" processId="ratingCalculation" >
+      <mapping type="in" from="loan" to="loan" />
+      <onExit>
+        <action type="expression" dialect="java" >Rating rating = (Rating)drools.getKnowledgeRuntime().getObjects(new ClassObjectFilter(Rating.class)).iterator().next();
+context.setVariable("customerLoanRating", rating.getRating());
+//this is hack
+drools.getIdentityMap().put(context.getProcessInstance(), drools.getWorkingMemory().getFactHandle(context.getProcessInstance()));
+update(context.getProcessInstance());</action>
+      </onExit>
+    </subProcess>
+    <split id="8" name="Rating?" x="162" y="375" width="69" height="40" type="2" >
+      <constraints>
+        <constraint toNodeId="24" toType="DROOLS_DEFAULT" name="otherwise" priority="100" type="rule" dialect="mvel" >eval(true)</constraint>
+        <constraint toNodeId="5" toType="DROOLS_DEFAULT" name="accept" priority="1" type="rule" dialect="mvel" >processInstance : WorkflowProcessInstance( 
+  eval( ((Integer)processInstance.getVariable(
+  "customerLoanRating")) &gt;= 1000 ))</constraint>
+      </constraints>
+    </split>
+    <workItem id="11" name="Email" x="217" y="662" width="80" height="40" >
+      <work name="Email" >
+        <parameter name="Body" >
+          <type name="org.drools.process.core.datatype.impl.type.StringDataType" />
+        </parameter>
+        <parameter name="From" >
+          <type name="org.drools.process.core.datatype.impl.type.StringDataType" />
+        </parameter>
+        <parameter name="Subject" >
+          <type name="org.drools.process.core.datatype.impl.type.StringDataType" />
+        </parameter>
+        <parameter name="To" >
+          <type name="org.drools.process.core.datatype.impl.type.StringDataType" />
+        </parameter>
+      </work>
+    </workItem>
+    <humanTask id="12" name="Process Loan" x="302" y="519" width="122" height="40" >
+      <work name="Human Task" >
+        <parameter name="ActorId" >
+          <type name="org.drools.process.core.datatype.impl.type.StringDataType" />
+          <value>123, 456, 789</value>
+        </parameter>
+        <parameter name="Comment" >
+          <type name="org.drools.process.core.datatype.impl.type.StringDataType" />
+          <value>Prepare documents, Arrange a meeting with the customer ...</value>
+        </parameter>
+        <parameter name="Content" >
+          <type name="org.drools.process.core.datatype.impl.type.StringDataType" />
+        </parameter>
+        <parameter name="Priority" >
+          <type name="org.drools.process.core.datatype.impl.type.StringDataType" />
+          <value>3</value>
+        </parameter>
+        <parameter name="Skippable" >
+          <type name="org.drools.process.core.datatype.impl.type.StringDataType" />
+          <value>false</value>
+        </parameter>
+        <parameter name="TaskName" >
+          <type name="org.drools.process.core.datatype.impl.type.StringDataType" />
+          <value>Process Loan</value>
+        </parameter>
+      </work>
+    </humanTask>
+    <ruleSet id="14" name="Validate Loan" x="307" y="85" width="115" height="40" ruleFlowGroup="validateLoan" />
+    <fault id="19" name="Low Rating" x="38" y="544" width="95" height="40" faultName="LowRating" />
+    <fault id="21" name="Not Valid" x="380" y="315" width="89" height="41" faultName="NotValidFault" />
+    <split id="20" name="Validated?" x="324" y="157" width="80" height="40" type="2" >
+      <constraints>
+        <constraint toNodeId="25" toType="DROOLS_DEFAULT" name="otherwise" priority="100" type="rule" dialect="mvel" >eval(true)</constraint>
+        <constraint toNodeId="4" toType="DROOLS_DEFAULT" name="no errors" priority="1" type="rule" dialect="mvel" >not Message()</constraint>
+      </constraints>
+    </split>
+    <join id="23" name="AND" x="264" y="591" width="42" height="40" type="1" />
+    <eventNode id="22" name="Approve Event" x="143" y="519" width="127" height="40" variableName="approvedEvent" >
+      <eventFilters>
+        <eventFilter type="eventType" eventType="LoanApprovedEvent" />
+      </eventFilters>
+    </eventNode>
+    <workItem id="25" name="Email" x="385" y="238" width="80" height="41" >
+      <work name="Email" >
+        <parameter name="Body" >
+          <type name="org.drools.process.core.datatype.impl.type.StringDataType" />
+          <value>Dear #{customer.firstName},
+The loan application form you've submitted is 
+missing following required data:
+#{errorList}
+
+Please review and submit it again.
+
+We look forward to hearing from you.
+Best Regards,
+Customer Service Team</value>
+        </parameter>
+        <parameter name="From" >
+          <type name="org.drools.process.core.datatype.impl.type.StringDataType" />
+          <value>loans@mybank.com</value>
+        </parameter>
+        <parameter name="Subject" >
+          <type name="org.drools.process.core.datatype.impl.type.StringDataType" />
+          <value>Your loan application for is missing some data</value>
+        </parameter>
+        <parameter name="To" >
+          <type name="org.drools.process.core.datatype.impl.type.StringDataType" />
+          <value>#{customer.email}</value>
+        </parameter>
+      </work>
+    </workItem>
+    <workItem id="24" name="Email" x="89" y="447" width="80" height="40" >
+      <work name="Email" >
+        <parameter name="Body" >
+          <type name="org.drools.process.core.datatype.impl.type.StringDataType" />
+        </parameter>
+        <parameter name="From" >
+          <type name="org.drools.process.core.datatype.impl.type.StringDataType" />
+        </parameter>
+        <parameter name="Subject" >
+          <type name="org.drools.process.core.datatype.impl.type.StringDataType" />
+        </parameter>
+        <parameter name="To" >
+          <type name="org.drools.process.core.datatype.impl.type.StringDataType" />
+        </parameter>
+      </work>
+    </workItem>
+    <workItem id="26" name="Transfer Funds" x="52" y="662" width="121" height="40" >
+      <work name="Transfer Funds" >
+        <parameter name="Amount" >
+          <type name="org.drools.process.core.datatype.impl.type.ObjectDataType" className="java.math.BigDecimal" />
+        </parameter>
+        <parameter name="Destination Account" >
+          <type name="org.drools.process.core.datatype.impl.type.ObjectDataType" className="droolsbook.bank.model.Account" />
+        </parameter>
+        <parameter name="Source Account" >
+          <type name="org.drools.process.core.datatype.impl.type.ObjectDataType" className="droolsbook.bank.model.Account" />
+        </parameter>
+      </work>
+      <mapping type="in" from="loanSourceAccount" to="Source Account" />
+      <mapping type="in" from="loan.amount" to="Amount" />
+      <mapping type="in" from="loan.destinationAccount" to="Destination Account" />
+      <onEntry>
+        <action type="expression" dialect="java" ></action>
+      </onEntry>
+    </workItem>
+  </nodes>
+
+  <connections>
+    <connection from="11" to="3" />
+    <connection from="20" to="4" />
+    <connection from="4" to="5" />
+    <connection from="8" to="5" />
+    <connection from="4" to="7" />
+    <connection from="7" to="8" />
+    <connection from="26" to="11" />
+    <connection from="5" to="12" />
+    <connection from="1" to="14" />
+    <connection from="24" to="19" />
+    <connection from="25" to="21" />
+    <connection from="14" to="20" />
+    <connection from="12" to="23" />
+    <connection from="22" to="23" />
+    <connection from="20" to="25" />
+    <connection from="8" to="24" />
+    <connection from="23" to="26" />
+  </connections>
+
+</process>

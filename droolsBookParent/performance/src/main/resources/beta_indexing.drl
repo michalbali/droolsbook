@@ -1,0 +1,11 @@
+package droolsbook.performance
+
+import droolsbook.bank.model.*; 
+ 
+rule accountWithCustomerLastName
+	when
+		Customer( $lastName : lastName )
+		$account : Account( name == $lastName )
+	then		
+		//..
+end

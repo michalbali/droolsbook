@@ -1,0 +1,19 @@
+package droolsbook.performance
+
+import droolsbook.bank.model.*; 
+ 
+import java.util.Date;
+import org.joda.time.DateMidnight;
+import org.joda.time.Years;
+
+rule noCustomerWithLowAccountBalance
+	when		
+		$address : Address( addressLine1 == "Rossa Avenue" )
+		not (
+			$account : Account( balance < 100 ) and
+			Customer( accounts contains $account )
+		)			
+	then
+		System.out.println("No customers with low balance in "+
+		"their accounts live in Rossa Avenue");
+end

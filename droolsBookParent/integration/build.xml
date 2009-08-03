@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<project default="compileArtifacts">
+  <property name="projectPath" value="" />
+  <property name="droolsPath"  value="target/drools_lib" />   
+
+  <path id="model.classpath">
+    <pathelement location="${projectPath}target/lib/bankingcore.jar" />
+    <pathelement location="${projectPath}target/lib/validation.jar" />
+    <pathelement location="${projectPath}target/lib/joda-time.jar" />
+  </path>
+
+  <path id="drools.classpath">
+    <pathelement location="${droolsPath}/drools-ant.jar" />
+    <pathelement location="${droolsPath}/drools-api.jar" />
+    <pathelement location="${droolsPath}/drools-core.jar" />
+    <pathelement location="${droolsPath}/drools-compiler.jar" />
+    <pathelement location="${droolsPath}/antlr-runtime.jar" />
+    <pathelement location="${droolsPath}/mvel2.jar" />
+    <pathelement location="${droolsPath}/core.jar" />
+    <!-- put all required drools libraries here -->
+  </path>
+
+  <taskdef name="compiler" classpathref="drools.classpath"
+    classname="org.drools.contrib.DroolsCompilerAntTask" />
+
+  <target name="compileArtifacts">
+    <compiler srcdir="${projectPath}src/main/resources"
+      tofile="${projectPath}target/validation.pkg" 
+      binformat="package" bintype="knowledge"
+      classpathref="model.classpath">
+      <include name="validation.drl" />
+      <!-- here you can include other artifacts like *.rf, *.dslr, *.brl -->
+	  <!-- you can inport multiple files using wildcards or single files using absolute  references -->
+    </compiler>
+  </target>
+</project>

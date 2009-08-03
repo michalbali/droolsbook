@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xmlns:context="http://www.springframework.org/schema/context"  
+  xmlns:aop="http://www.springframework.org/schema/aop"
+  xmlns:tx="http://www.springframework.org/schema/tx"
+  xsi:schemaLocation="
+       http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
+       http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-2.5.xsd
+       http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-2.5.xsd
+       http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-2.5.xsd">
+
+  <import resource="classpath:applicationContext.xml" />
+  
+  <context:annotation-config />
+
+  <bean id="messageSource"
+    class="org.springframework.context.support.ResourceBundleMessageSource">
+    <property name="basename" value="messages" />
+  </bean>
+
+
+  <bean name="/customerList.htm"
+    class="droolsbook.sampleApplication.web.CustomerListController">
+  </bean>
+  
+  
+  <bean name="/taskList.htm"
+    class="droolsbook.sampleApplication.web.TaskListController">
+  </bean>  
+  <bean name="/taskClaim.htm"
+    class="droolsbook.sampleApplication.web.TaskClaimController">
+  </bean>  
+  <bean name="/taskStart.htm"
+    class="droolsbook.sampleApplication.web.TaskStartController">
+  </bean>
+  
+  
+  
+  <bean name="/taskComplete.htm"
+    class="droolsbook.sampleApplication.web.TaskCompleteController">
+  </bean>
+  
+  <bean name="/approveEvent.htm"
+    class="droolsbook.sampleApplication.web.ApproveEventController">
+  </bean>
+
+  <bean id="viewResolver"
+    class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+    <property name="viewClass"
+      value="org.springframework.web.servlet.view.JstlView" />
+    <property name="prefix" value="/WEB-INF/jsp/" />
+    <property name="suffix" value=".jsp" />
+  </bean>
+
+  <bean name="/customerSave.htm" class="droolsbook.sampleApplication.web.CustomerSaveFormController">
+    <property name="sessionForm" value="true" />
+    <property name="commandName" value="customerSave" />
+    <property name="commandClass" 
+      value="droolsbook.bank.model.Customer" />
+    <property name="formView" value="customerSave" />
+    <property name="successView" value="index.jsp" />
+  </bean>
+
+  <bean name="/loanRequest.htm" class="droolsbook.sampleApplication.web.LoanRequestFormController">
+    <property name="sessionForm" value="true" />
+    <property name="commandName" value="loanRequest" />
+    <property name="commandClass" value="droolsbook.bank.model.Loan" />
+    <property name="formView" value="loanRequest" />
+    <property name="successView" value="customerList.htm" />
+  </bean>
+
+
+
+
+
+  <bean name="webSessionUtils" class="droolsbook.sampleApplication.web.WebSessionUtils" />
+
+
+
+  <bean name="/listPendingTasks.htm"
+    class="droolsbook.sampleApplication.web.ListPendingTasksController">
+  </bean>
+
+  <bean name="server" class="droolsbook.sampleApplication.server.HumanTaskServer" destroy-method="destroy" />
+
+  <bean name="minaTaskClient"
+    class="droolsbook.sampleApplication.server.MinaTaskClientFactory"
+    factory-method="create" depends-on="server" />
+
+
+</beans>
