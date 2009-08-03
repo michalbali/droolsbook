@@ -17,7 +17,6 @@ One chapter in the book corresponds to one or more projects.
  * appendix custom operator - project cep
  * other projects:
    * project bankingcore - contains banking domain model, reporting model, some service interfaces, some utility classes
-   * project droolsBookParent - maven parent pom project
 
 == Usage ==
  # install Eclipse
@@ -26,7 +25,7 @@ One chapter in the book corresponds to one or more projects.
  # set M2_REPO Eclipse variable to point to your local maven repository (for more info see http://maven.apache.org/plugins/maven-eclipse-plugin/usage.html#Maven%20repository)
  # extract zip file into the Eclipse workspace (you can do this step outside of Eclipse)
  # go to the droolsBookParent project and run `mvn eclipse:eclipse -DdownloadSources=true`
- # import all projects at once through _File->Import..->General->Existing Projects into Workspace->select root directory->you should see bunch of projects that you can import_
+ # import all (14) projects through _File->Import..->General->Existing Projects into Workspace->select root directory->you should see bunch of projects that you can import_
  # setup is complete, you can start playing with the examples
 
 You can also build all examples and run all tests from command line. Go to the droolsBookParent project and execute:

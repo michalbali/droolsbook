@@ -42,9 +42,7 @@
       <includes>
         <include>src</include>
         <include>licenses</include>
-        <include>license.txt</include>
-        <include>pom.xml</include>
-        <include>README.txt</include>
+        <include>*</include>        
       </includes>
     </fileSet>
   </fileSets>
