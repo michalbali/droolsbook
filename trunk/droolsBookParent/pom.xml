@@ -3,7 +3,7 @@
   <groupId>droolsbook</groupId>
   <artifactId>parent</artifactId>
   <packaging>pom</packaging>
-  <version>1.0-SNAPSHOT</version>
+  <version>1.0</version>
   <name>Drools Book Parent</name>
   <url />
   <licenses>
@@ -197,9 +197,9 @@
     -->
   </repositories>
   <scm>
-    <connection>scm:svn:http://droolsbook.googlecode.com/svn/trunk</connection>
-    <developerConnection>scm:svn:https://droolsbook.googlecode.com/svn/trunk</developerConnection>
-    <url>http://droolsbook.googlecode.com/svn/trunk</url>        
+    <connection>scm:svn:http://droolsbook.googlecode.com/svn/tags/parent-1.0</connection>
+    <developerConnection>scm:svn:https://droolsbook.googlecode.com/svn/tags/parent-1.0</developerConnection>
+    <url>http://droolsbook.googlecode.com/svn/tags/parent-1.0</url>        
   </scm>
   <properties>
     <drools.ver>5.0.1</drools.ver>
