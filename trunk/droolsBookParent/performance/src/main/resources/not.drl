@@ -11,7 +11,8 @@ rule noCustomerWithLowAccountBalance
 		$address : Address( addressLine1 == "Rossa Avenue" )
 		not (
 			$account : Account( balance < 100 ) and
-			Customer( accounts contains $account )
+			Customer( accounts contains $account, 
+				address == $address )
 		)			
 	then
 		System.out.println("No customers with low balance in "+
