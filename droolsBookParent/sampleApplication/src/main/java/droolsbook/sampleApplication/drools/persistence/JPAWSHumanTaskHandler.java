@@ -1,39 +1,10 @@
 package droolsbook.sampleApplication.drools.persistence;
 
-import org.apache.mina.transport.socket.nio.NioSocketConnector;
-import org.drools.KnowledgeBase;
-import org.drools.SystemEventListenerFactory;
-import org.drools.eventmessaging.EventKey;
-import org.drools.eventmessaging.EventResponseHandler;
-import org.drools.eventmessaging.Payload;
-import org.drools.persistence.session.SingleSessionCommandService;
-import org.drools.process.command.CompleteWorkItemCommand;
-import org.drools.process.command.RegisterWorkItemHandlerCommand;
-import org.drools.process.instance.impl.demo.SystemOutWorkItemHandler;
-import org.drools.runtime.Environment;
-import org.drools.runtime.EnvironmentName;
-import org.drools.runtime.KnowledgeSessionConfiguration;
-import org.drools.runtime.StatefulKnowledgeSession;
-import org.drools.runtime.process.WorkItem;
-import org.drools.runtime.process.WorkItemHandler;
-import org.drools.runtime.process.WorkItemManager;
-import org.drools.task.*;
-import org.drools.task.event.*;
-import org.drools.task.service.ContentData;
-import org.drools.task.service.MinaTaskClient;
-import org.drools.task.service.TaskClientHandler;
-import org.drools.task.service.responsehandlers.AbstractBaseResponseHandler;
-import org.drools.task.service.TaskClientHandler.AddTaskResponseHandler;
-import org.drools.task.service.TaskClientHandler.GetContentResponseHandler;
-import org.drools.task.service.TaskClientHandler.GetTaskResponseHandler;
-import org.hibernate.property.MapAccessor.MapSetter;
-import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.support.TransactionCallback;
-import org.springframework.transaction.support.TransactionTemplate;
-
-import droolsbook.org.drools.persistence.KnowledgeSessionLookup;
-
-import java.io.*;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.net.InetSocketAddress;
 import java.net.SocketAddress;
 import java.util.ArrayList;
@@ -41,6 +12,46 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import org.apache.mina.transport.socket.nio.NioSocketConnector;
+import org.drools.SystemEventListenerFactory;
+import org.drools.eventmessaging.EventKey;
+import org.drools.eventmessaging.EventResponseHandler;
+import org.drools.eventmessaging.Payload;
+import org.drools.runtime.StatefulKnowledgeSession;
+import org.drools.runtime.process.WorkItem;
+import org.drools.runtime.process.WorkItemHandler;
+import org.drools.runtime.process.WorkItemManager;
+import org.drools.task.AccessType;
+import org.drools.task.Content;
+import org.drools.task.Group;
+import org.drools.task.I18NText;
+import org.drools.task.OrganizationalEntity;
+import org.drools.task.PeopleAssignments;
+import org.drools.task.SubTasksStrategy;
+import org.drools.task.SubTasksStrategyFactory;
+import org.drools.task.Task;
+import org.drools.task.TaskData;
+import org.drools.task.User;
+import org.drools.task.event.TaskCompletedEvent;
+import org.drools.task.event.TaskEvent;
+import org.drools.task.event.TaskEventKey;
+import org.drools.task.event.TaskFailedEvent;
+import org.drools.task.event.TaskSkippedEvent;
+import org.drools.task.service.ContentData;
+import org.drools.task.service.TaskClient;
+import org.drools.task.service.TaskClientHandler;
+import org.drools.task.service.TaskClientHandler.AddTaskResponseHandler;
+import org.drools.task.service.TaskClientHandler.GetContentResponseHandler;
+import org.drools.task.service.TaskClientHandler.GetTaskResponseHandler;
+import org.drools.task.service.mina.MinaTaskClientConnector;
+import org.drools.task.service.mina.MinaTaskClientHandler;
+import org.drools.task.service.responsehandlers.AbstractBaseResponseHandler;
+import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.support.TransactionCallback;
+import org.springframework.transaction.support.TransactionTemplate;
+
+import droolsbook.org.drools.persistence.KnowledgeSessionLookup;
 
 public class JPAWSHumanTaskHandler implements WorkItemHandler {
 
@@ -51,7 +62,7 @@ public class JPAWSHumanTaskHandler implements WorkItemHandler {
   
   private String ipAddress = "127.0.0.1";
   private int port = 9123;
-  private MinaTaskClient client;
+  private TaskClient client;
   private Map<Long, WorkItemManager> managers = new HashMap<Long, WorkItemManager>();
   private Map<Long, Long> idMapping = new HashMap<Long, Long>();
 
@@ -70,12 +81,9 @@ public class JPAWSHumanTaskHandler implements WorkItemHandler {
   
   public void connect() {
     if (client == null) {
-      client = new MinaTaskClient(
-        "org.drools.process.workitem.wsht.WSHumanTaskHandler",
-                    new TaskClientHandler(SystemEventListenerFactory.getSystemEventListener()));
-      NioSocketConnector connector = new NioSocketConnector();
-      SocketAddress address = new InetSocketAddress(ipAddress, port);
-      boolean connected = client.connect(connector, address);
+    	TaskClient client = new TaskClient(new MinaTaskClientConnector("org.drools.process.workitem.wsht.WSHumanTaskHandler",
+        		new MinaTaskClientHandler(SystemEventListenerFactory.getSystemEventListener())));
+      boolean connected = client.connect(ipAddress, port);
       if (!connected) {
         throw new IllegalArgumentException(
           "Could not connect task client");

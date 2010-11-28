@@ -21,6 +21,7 @@ import org.drools.KnowledgeBaseConfiguration;
 import org.drools.KnowledgeBaseFactory;
 import org.drools.RuleBaseConfiguration;
 import org.drools.SystemEventListenerFactory;
+import org.drools.audit.WorkingMemoryFileLogger;
 import org.drools.builder.KnowledgeBuilder;
 import org.drools.builder.KnowledgeBuilderFactory;
 import org.drools.builder.ResourceType;
@@ -28,7 +29,6 @@ import org.drools.common.AbstractRuleBase;
 import org.drools.io.ResourceFactory;
 import org.drools.process.instance.impl.demo.SystemOutWorkItemHandler;
 import org.drools.process.workitem.wsht.WSHumanTaskHandler;
-import org.drools.ruleflow.instance.RuleFlowProcessInstance;
 import org.drools.runtime.ClassObjectFilter;
 import org.drools.runtime.StatefulKnowledgeSession;
 import org.drools.runtime.process.ProcessInstance;
@@ -40,11 +40,13 @@ import org.drools.task.MockUserInfo;
 import org.drools.task.Status;
 import org.drools.task.User;
 import org.drools.task.query.TaskSummary;
-import org.drools.task.service.MinaTaskClient;
-import org.drools.task.service.MinaTaskServer;
+import org.drools.task.service.TaskClient;
 import org.drools.task.service.TaskClientHandler;
 import org.drools.task.service.TaskService;
 import org.drools.task.service.TaskServiceSession;
+import org.drools.task.service.mina.MinaTaskClientConnector;
+import org.drools.task.service.mina.MinaTaskClientHandler;
+import org.drools.task.service.mina.MinaTaskServer;
 import org.drools.task.service.responsehandlers.BlockingTaskOperationResponseHandler;
 import org.drools.task.service.responsehandlers.BlockingTaskSummaryResponseHandler;
 import org.jmock.Expectations;
@@ -103,6 +105,8 @@ public class DefaultLoanApprovalServiceTest {
 
   TrackingProcessEventListener trackingProcessEventListener;
 
+  WorkingMemoryFileLogger fileLogger;
+  
   @BeforeClass
   public static void setUpClass() throws Exception {
     KnowledgeBuilder builder = KnowledgeBuilderFactory.newKnowledgeBuilder();
@@ -162,6 +166,8 @@ public class DefaultLoanApprovalServiceTest {
     WorkItemHandler transferFundsHandler = new SystemOutWorkItemHandler();
     session.getWorkItemManager().registerWorkItemHandler(
         "Transfer Funds", transferFundsHandler);
+    
+    //fileLogger = new WorkingMemoryFileLogger(session);
   }
 
   // @extract-start 07 15
@@ -175,12 +181,23 @@ public class DefaultLoanApprovalServiceTest {
         PROCESS_LOAN_APPROVAL, parameterMap);
     session.insert(processInstance);
     session.fireAllRules();
+    
+		// important note: Be careful when starting a process instance and then
+		// inserting the process instance into the session, if there are rules
+		// that react to a process instance then the 'startProcess' may not
+		// trigger them; what seems to be happening is that when the process is
+		// started it runs until it comes to a wait state or a ruleflow group
+		// that has some activated rules, then it waits for the fireAllRules
+		// call. 
   }
   // @extract-end
   
   @After
   public void onShutDown() {
     session.dispose();
+    if (fileLogger != null) {
+    	fileLogger.writeToDisk();
+    }
   }
   
   private void setUpLowAmount() {
@@ -213,8 +230,8 @@ public class DefaultLoanApprovalServiceTest {
         .getConfiguration();
     //System.out.println(ruleBaseConfiguration
     //    .getWorkItemHandlers());
-    System.out.println(ruleBaseConfiguration
-        .getProcessWorkDefinitions());
+    //System.out.println(ruleBaseConfiguration
+    //    .getProcessWorkDefinitions());
   }
 
   @Test
@@ -314,8 +331,7 @@ public class DefaultLoanApprovalServiceTest {
 
   @Test
   public void ratingCalculation() {
-    processInstance = (RuleFlowProcessInstance) session
-        .startProcess(PROCESS_RATING_CALCULATION); // no parameters
+    processInstance = session.startProcess(PROCESS_RATING_CALCULATION); // no parameters
     session.fireAllRules();
     assertTrue(trackingProcessEventListener.isNodeTriggered(
         PROCESS_RATING_CALCULATION,
@@ -339,7 +355,9 @@ public class DefaultLoanApprovalServiceTest {
   @Test
   public void ratingSplitNodeOther() {
     setUpLowRating();
+    setUpHighAmount();
     startProcess();
+    
     assertFalse(trackingProcessEventListener.isNodeTriggered(
         PROCESS_LOAN_APPROVAL, NODE_JOIN_RATING));
     assertTrue(trackingProcessEventListener.isNodeTriggered(
@@ -399,13 +417,9 @@ public class DefaultLoanApprovalServiceTest {
     // @extract-end
 
     // @extract-start 07 12
-    MinaTaskClient client = new MinaTaskClient("client 1",
-        new TaskClientHandler(
-        SystemEventListenerFactory.getSystemEventListener()));
-    NioSocketConnector connector = new NioSocketConnector();
-    SocketAddress address = new InetSocketAddress("127.0.0.1",
-        9123);
-    boolean isConnected = client.connect(connector, address);
+    TaskClient client = new TaskClient(new MinaTaskClientConnector("client 1",
+    		new MinaTaskClientHandler(SystemEventListenerFactory.getSystemEventListener())));
+    boolean isConnected = client.connect("127.0.0.1", 9123);
     assertTrue(isConnected);
 
     BlockingTaskSummaryResponseHandler summaryHandler = 

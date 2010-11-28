@@ -29,14 +29,15 @@ processInstance : WorkflowProcessInstance(
   "customerLoanRating")) >= 1000 ))
     
   then
-    System.out.println("calculateRating");
+    System.out.println("rule calculateRating");
 end
+
 
 
 rule ruleOnLoan
 ruleflow-group "calculateRating"
   when		
-    Loan(  )
+    //Loan(  )
   then
     System.out.println("!!!! calculateRating");
 end
@@ -50,6 +51,19 @@ ruleflow-group "calculateRating"
 		Rating rating = new Rating();
 		rating.setRating(Integer.valueOf(1500));
 		insert(rating);
+end
+
+rule updateProcess
+ruleflow-group "calculateRating"
+salience -100
+no-loop true
+	when
+		$rating : Rating( )
+		$processInstance : WorkflowProcessInstance( )
+	then
+		modify($processInstance) {
+			setVariable("customerLoanRating", $rating.getRating());
+		}
 end
 
 

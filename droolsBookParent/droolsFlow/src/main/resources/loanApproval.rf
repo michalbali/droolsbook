@@ -65,11 +65,11 @@ System.out.println("exception == " + variableScopeInstance.getVariable("exceptio
     <subProcess id="7" name="Rating Calcualtion" x="125" y="302" width="143" height="41" processId="ratingCalculation" >
       <mapping type="in" from="loan" to="loan" />
       <onExit>
-        <action type="expression" dialect="java" >Rating rating = (Rating)drools.getKnowledgeRuntime().getObjects(new ClassObjectFilter(Rating.class)).iterator().next();
-context.setVariable("customerLoanRating", rating.getRating());
+        <action type="expression" dialect="java" >//Rating rating = (Rating)kcontext.getKnowledgeRuntime().getObjects(new ClassObjectFilter(Rating.class)).iterator().next();
+//context.setVariable("customerLoanRating", rating.getRating());
 //this is hack
-drools.getIdentityMap().put(context.getProcessInstance(), drools.getWorkingMemory().getFactHandle(context.getProcessInstance()));
-update(context.getProcessInstance());</action>
+//kcontext.getIdentityMap().put(context.getProcessInstance(), kcontext.getKnowledgeRuntime().getFactHandle(context.getProcessInstance()));
+//kcontext.getKnowledgeRuntime().update(kcontext.getKnowledgeRuntime().getFactHandle(context.getProcessInstance()), context.getProcessInstance());</action>
       </onExit>
     </subProcess>
     <split id="8" name="Rating?" x="162" y="375" width="69" height="40" type="2" >

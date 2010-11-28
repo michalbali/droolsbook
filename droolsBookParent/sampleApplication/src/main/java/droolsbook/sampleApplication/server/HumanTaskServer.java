@@ -6,9 +6,9 @@ import javax.persistence.Persistence;
 import org.drools.SystemEventListenerFactory;
 import org.drools.task.MockUserInfo;
 import org.drools.task.User;
-import org.drools.task.service.MinaTaskServer;
 import org.drools.task.service.TaskService;
 import org.drools.task.service.TaskServiceSession;
+import org.drools.task.service.mina.MinaTaskServer;
 
 public class HumanTaskServer {
 

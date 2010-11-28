@@ -8,7 +8,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.drools.task.query.TaskSummary;
-import org.drools.task.service.MinaTaskClient;
+import org.drools.task.service.TaskClient;
 import org.drools.task.service.responsehandlers.BlockingTaskSummaryResponseHandler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.servlet.ModelAndView;
@@ -19,7 +19,7 @@ import droolsbook.bank.model.User;
 // @extract-start 08 04
 public class TaskListController extends AbstractController {
   @Autowired
-  private MinaTaskClient client;
+  private TaskClient client;
   @Autowired
   private WebSessionUtils webSessionUtils;
 

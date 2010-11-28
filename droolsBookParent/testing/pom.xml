@@ -25,7 +25,6 @@
     <dependency>
       <groupId>org.drools</groupId>
       <artifactId>drools-verifier</artifactId>
-      <version>5.0.1</version>
     </dependency>
   </dependencies>
 

@@ -135,7 +135,7 @@ no-loop true
     // @extract-start 06 28
     $averageBalance : BigDecimal( ) from accumulate(
       AccountUpdatedEvent( accountNumber == $account.number, 
-      $balance : balance ) over window:time( 30d ) from 
+      $balance : balance ) over window:time( 720m ) from 
       entry-point AccountStream, bigDecimalAverage($balance))
     // @extract-end  
     $accountInfo : AccountInfo( number == $account.number )		
@@ -184,7 +184,7 @@ dialect "mvel"
     Number( $averageAmount : doubleValue ) from accumulate(
       TransactionCompletedEvent( fromAccountNumber == 
       $account.number, $amount : amount ) 
-      over window:time( 30d ) from entry-point 
+      over window:time( 720m ) from entry-point 
       TransactionStream, average( $amount ) )		
     $t1 : TransactionCreatedEvent( fromAccountNumber == 
       $account.number, amount > ($averageAmount * 3.00) ) over 

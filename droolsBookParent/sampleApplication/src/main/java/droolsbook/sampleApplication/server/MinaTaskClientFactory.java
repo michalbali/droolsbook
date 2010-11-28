@@ -1,22 +1,16 @@
 package droolsbook.sampleApplication.server;
 
-import java.net.InetSocketAddress;
-import java.net.SocketAddress;
-
-import org.apache.mina.transport.socket.nio.NioSocketConnector;
 import org.drools.SystemEventListenerFactory;
-import org.drools.task.service.MinaTaskClient;
-import org.drools.task.service.TaskClientHandler;
+import org.drools.task.service.TaskClient;
+import org.drools.task.service.mina.MinaTaskClientConnector;
+import org.drools.task.service.mina.MinaTaskClientHandler;
 
 public class MinaTaskClientFactory {
 
-  public static MinaTaskClient create() {
-    MinaTaskClient client = new MinaTaskClient("client 1",
-        new TaskClientHandler(SystemEventListenerFactory.getSystemEventListener()));
-    NioSocketConnector connector = new NioSocketConnector();
-    SocketAddress address = new InetSocketAddress("127.0.0.1",
-        9123);
-    client.connect(connector, address);
+  public static TaskClient create() {
+	TaskClient client = new TaskClient(new MinaTaskClientConnector("client 1",
+			new MinaTaskClientHandler(SystemEventListenerFactory.getSystemEventListener())));
+    client.connect("127.0.0.1", 9123);
     return client;
   }
   

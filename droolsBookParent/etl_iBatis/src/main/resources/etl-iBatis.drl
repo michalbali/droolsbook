@@ -15,8 +15,9 @@ dialect "mvel"
 		$customerMap : Map( ) 
 			from legacyService.findAllCustomers()		
 	then	
-		$customerMap["_type_"] = "Customer"	
-		insert( $customerMap )
+		$customerMap.put("_type_", "Customer");
+		//$customerMap["_type_"] = "Customer";	
+		insert( $customerMap );
 end
 // @extract-end
 
@@ -40,7 +41,8 @@ dialect "mvel"
 			from legacyService.findAddressByCustomerId( 
 				$customerMap["customer_id"] )		
 	then		
-		$addressMap["_type_"] = "Address"
+		//$addressMap["_type_"] = "Address"
+		$addressMap.put("_type_", "Address");
 		insert( $addressMap )
 end
 // @extract-end
