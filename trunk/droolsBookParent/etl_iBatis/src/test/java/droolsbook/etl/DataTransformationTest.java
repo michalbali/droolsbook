@@ -7,6 +7,7 @@ import static org.junit.Assert.assertSame;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -16,9 +17,9 @@ import org.drools.KnowledgeBase;
 import org.drools.ObjectFilter;
 import org.drools.command.Command;
 import org.drools.command.CommandFactory;
+import org.drools.command.runtime.rule.FireAllRulesCommand;
+import org.drools.command.runtime.rule.GetObjectsCommand;
 import org.drools.event.rule.DebugWorkingMemoryEventListener;
-import org.drools.process.command.FireAllRulesCommand;
-import org.drools.process.command.GetObjectsCommand;
 import org.drools.runtime.ExecutionResults;
 import org.drools.runtime.StatelessKnowledgeSession;
 import org.junit.Before;
@@ -175,7 +176,7 @@ public class DataTransformationTest {
    * creates multiple commands, calls session.execute and 
    * returns results back  
    */
-  protected ExecutionResults execute(Iterable objects,
+  protected ExecutionResults execute(Collection<?> objects,
       String ruleName, final String filterType,
       String filterOut) {
     ValidationReport validationReport = reportFactory

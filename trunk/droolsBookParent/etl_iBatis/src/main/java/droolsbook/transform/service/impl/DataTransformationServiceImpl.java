@@ -9,7 +9,7 @@ import java.util.Set;
 import org.drools.KnowledgeBase;
 import org.drools.command.Command;
 import org.drools.command.CommandFactory;
-import org.drools.process.command.FireAllRulesCommand;
+import org.drools.command.runtime.rule.FireAllRulesCommand;
 import org.drools.runtime.ExecutionResults;
 import org.drools.runtime.StatelessKnowledgeSession;
 import org.drools.runtime.rule.QueryResults;

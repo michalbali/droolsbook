@@ -1,31 +1,20 @@
 package droolsbook.sampleApplication.web;
 
-import java.net.InetSocketAddress;
-import java.net.SocketAddress;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.mina.transport.socket.nio.NioSocketConnector;
-import org.drools.task.query.TaskSummary;
-import org.drools.task.service.MinaTaskClient;
-import org.drools.task.service.TaskClientHandler;
+import org.drools.task.service.TaskClient;
 import org.drools.task.service.responsehandlers.BlockingTaskOperationResponseHandler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.AbstractController;
-import org.springframework.web.servlet.mvc.Controller;
-import org.springframework.web.servlet.view.RedirectView;
 
 import droolsbook.bank.model.User;
 
 
 public class TaskClaimController extends AbstractController {
   @Autowired
-  private MinaTaskClient client;
+  private TaskClient client;
   @Autowired
   private WebSessionUtils webSessionUtils;
 

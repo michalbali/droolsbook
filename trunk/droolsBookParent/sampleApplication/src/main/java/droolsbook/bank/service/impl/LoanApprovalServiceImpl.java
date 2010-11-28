@@ -2,34 +2,14 @@ package droolsbook.bank.service.impl;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Properties;
 
 import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
 import javax.persistence.PersistenceContext;
-import javax.persistence.PersistenceUnit;
 
-import org.drools.KnowledgeBase;
-import org.drools.KnowledgeBaseFactory;
-import org.drools.impl.EnvironmentFactory;
-import org.drools.marshalling.MarshallerFactory;
-import org.drools.marshalling.ObjectMarshallingStrategy;
-import org.drools.persistence.session.SingleSessionCommandService;
-import org.drools.process.command.Command;
-import org.drools.process.command.RegisterWorkItemHandlerCommand;
-import org.drools.process.command.SignalEventCommand;
-import org.drools.process.instance.impl.demo.SystemOutWorkItemHandler;
-import org.drools.reteoo.ReteooWorkingMemory;
-import org.drools.runtime.Environment;
-import org.drools.runtime.EnvironmentName;
-import org.drools.runtime.KnowledgeSessionConfiguration;
+import org.drools.command.runtime.process.SignalEventCommand;
 import org.drools.runtime.StatefulKnowledgeSession;
 import org.drools.runtime.process.ProcessInstance;
-import org.drools.runtime.process.WorkItemHandler;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Repository;
-import org.springframework.transaction.support.TransactionTemplate;
 
 import droolsbook.bank.model.Account;
 import droolsbook.bank.model.Customer;

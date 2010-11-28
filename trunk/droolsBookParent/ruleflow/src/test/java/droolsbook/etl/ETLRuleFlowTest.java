@@ -20,7 +20,6 @@ import org.drools.builder.KnowledgeBuilderFactory;
 import org.drools.builder.ResourceType;
 import org.drools.compiler.PackageBuilder;
 import org.drools.event.rule.DebugAgendaEventListener;
-import org.drools.event.DebugRuleFlowEventListener;
 import org.drools.io.ResourceFactory;
 import org.drools.rule.Package;
 import org.drools.runtime.StatefulKnowledgeSession;

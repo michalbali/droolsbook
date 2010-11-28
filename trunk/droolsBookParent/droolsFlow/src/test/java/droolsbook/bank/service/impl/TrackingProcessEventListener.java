@@ -3,9 +3,6 @@ package droolsbook.bank.service.impl;
 import java.util.ArrayList;
 import java.util.Collection;
 
-import org.drools.WorkingMemory;
-import org.drools.event.DefaultRuleFlowEventListener;
-import org.drools.event.RuleFlowNodeTriggeredEvent;
 import org.drools.event.process.DefaultProcessEventListener;
 import org.drools.event.process.ProcessNodeTriggeredEvent;
 import org.drools.runtime.process.NodeInstance;
