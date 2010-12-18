@@ -53,7 +53,12 @@
                   <artifactId>core</artifactId>
                   <version>3.4.2.v_883_R34x</version>
                 </artifactItem>
-              </artifactItems>
+                <!--<artifactItem>
+                  <groupId>org.eclipse.jdt.core.compiler</groupId>
+                  <artifactId>ecj</artifactId>
+                  <version>3.5.1</version>
+                </artifactItem>
+              --></artifactItems>
               <outputDirectory>${project.build.directory}/drools_lib</outputDirectory>
               <stripVersion>true</stripVersion>
             </configuration>
@@ -145,8 +150,7 @@
 
     <dependency>
       <groupId>org.springframework</groupId>
-      <artifactId>spring</artifactId>
-      <version>2.5.6</version>
+      <artifactId>spring-context</artifactId>
     </dependency>
     
      <dependency>

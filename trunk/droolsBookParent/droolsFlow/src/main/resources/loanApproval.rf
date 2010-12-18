@@ -12,9 +12,9 @@
       <import name="droolsbook.bank.service.*" />
       <import name="org.drools.runtime.process.ProcessInstance" />
       <import name="org.drools.runtime.process.WorkflowProcessInstance" />
-      <import name="org.drools.process.instance.impl.ProcessInstanceImpl" />
-      <import name="org.drools.process.instance.context.variable.VariableScopeInstance" />
-      <import name="org.drools.process.core.context.variable.VariableScope" />
+      <import name="org.jbpm.process.instance.impl.ProcessInstanceImpl" />
+      <import name="org.jbpm.process.instance.context.variable.VariableScopeInstance" />
+      <import name="org.jbpm.process.core.context.variable.VariableScope" />
       <import name="org.drools.runtime.ClassObjectFilter" />
     </imports>
     <variables>

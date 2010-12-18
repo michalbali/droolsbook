@@ -21,7 +21,6 @@
     <dependency>
       <groupId>droolsbook</groupId>
       <artifactId>validation</artifactId>
-      <version>${project.version}</version>
       <type>test-jar</type>
       <scope>test</scope>
     </dependency>
@@ -32,7 +31,6 @@
     <dependency>
       <groupId>droolsbook</groupId>
       <artifactId>etl_iBatis</artifactId>
-      <version>${project.version}</version>
       <type>test-jar</type>
       <scope>test</scope>
     </dependency>

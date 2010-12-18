@@ -47,7 +47,8 @@ dialect "mvel"
 >			from legacyService.findAddressByCustomerId( 
 >				$customerMap["customer_id"] )		
 	then		
->		$addressMap["_type_"] = "Address"
+>		//$addressMap["_type_"] = "Address"
+>		$addressMap.put("_type_", "Address");
 >		insert( $addressMap )
 end
 

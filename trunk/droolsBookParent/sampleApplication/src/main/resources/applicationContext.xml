@@ -84,9 +84,9 @@
     ref="transferFundsWorkItemHandler"/>
 </bean>
 
-  <bean name="emailWorkItemHandler" class="org.drools.process.instance.impl.demo.SystemOutWorkItemHandler" />
-  <bean name="transferFundsWorkItemHandler" class="org.drools.process.instance.impl.demo.SystemOutWorkItemHandler" />
-  <bean name="approveLoanWorkItemHandler" class="droolsbook.sampleApplication.drools.persistence.JPAWSHumanTaskHandler" >
+  <bean name="emailWorkItemHandler" class="org.jbpm.process.instance.impl.demo.SystemOutWorkItemHandler" />
+  <bean name="transferFundsWorkItemHandler" class="org.jbpm.process.instance.impl.demo.SystemOutWorkItemHandler" />
+  <bean name="approveLoanWorkItemHandler" class="org.jbpm.process.workitem.wsht.WSHumanTaskHandler" >
     <property name="transactionTemplate" 
       ref="transactionTemplate" />
     <property name="knowledgeSessionLookup" 
