@@ -19,49 +19,33 @@
 			<artifactId>commons-lang</artifactId>
 		</dependency>
 		
-		<dependency>
-			<groupId>org.drools</groupId>
-			<artifactId>drools-process-task</artifactId>
-		</dependency>
         <dependency>
-            <groupId>org.drools</groupId>
-            <artifactId>drools-flow-core</artifactId>
+          <groupId>org.drools</groupId>
+          <artifactId>drools-process-task</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.drools</groupId>
-            <artifactId>drools-flow-compiler</artifactId>
+            <groupId>org.jbpm</groupId>
+            <artifactId>jbpm-flow</artifactId>
         </dependency>
-        
+        <dependency>
+            <groupId>org.jbpm</groupId>
+            <artifactId>jbpm-flow-builder</artifactId>
+        </dependency>
     	
-    	<dependency>
-    		<groupId>org.slf4j</groupId>
-    		<artifactId>slf4j-jdk14</artifactId>
-    		<version>1.5.2</version>
-    	</dependency>     	       	
-
-    	<dependency>
-    		<groupId>org.slf4j</groupId>
-    		<artifactId>slf4j-api</artifactId>
-    		<version>1.5.2</version>
-    	</dependency>          	     	
-    	   	
     	<!-- Hibernate -->
     	<dependency>
     		<groupId>org.hibernate</groupId>
     		<artifactId>hibernate-entitymanager</artifactId>
-    		<version>3.4.0.GA</version>
     	</dependency>
     	<!-- HSQLDB -->
     	<dependency>
     		<groupId>com.h2database</groupId>
     		<artifactId>h2</artifactId>
-    		<version>1.0.77</version>
     	</dependency>  
     	
     	<dependency>
           <groupId>org.subethamail</groupId>
           <artifactId>subethasmtp-wiser</artifactId>
-          <version>1.2</version>
           <scope>test</scope>
     	</dependency>     
     	
@@ -69,5 +53,12 @@
 			<groupId>org.jmock</groupId>
 			<artifactId>jmock-junit4</artifactId>
 		</dependency>	
+    
+        <dependency>
+        <groupId>org.apache.mina</groupId>
+        <artifactId>mina-core</artifactId>
+      </dependency>
+
+        
 	</dependencies>
 </project>

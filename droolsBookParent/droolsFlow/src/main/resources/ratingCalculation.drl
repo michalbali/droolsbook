@@ -3,9 +3,9 @@ package droolsbook.droolsflow.loan
 import droolsbook.bank.model.*
 import droolsbook.droolsflow.model.*
 
-import org.drools.process.instance.impl.ProcessInstanceImpl
-import org.drools.process.instance.context.variable.VariableScopeInstance
-import org.drools.process.core.context.variable.VariableScope
+import org.jbpm.process.instance.impl.ProcessInstanceImpl
+import org.jbpm.process.instance.context.variable.VariableScopeInstance
+import org.jbpm.process.core.context.variable.VariableScope
 
 import org.drools.runtime.process.WorkflowProcessInstance
 
