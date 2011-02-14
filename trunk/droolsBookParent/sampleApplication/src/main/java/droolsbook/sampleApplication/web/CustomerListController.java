@@ -8,8 +8,8 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.Controller;
@@ -17,7 +17,7 @@ import org.springframework.web.servlet.mvc.Controller;
 import droolsbook.bank.service.BankingService;
 
 public class CustomerListController implements Controller {
-  protected final Log logger = LogFactory.getLog(getClass());
+  protected final Logger logger = LoggerFactory.getLogger(getClass());
 
   @Autowired
   private BankingService bankingService;

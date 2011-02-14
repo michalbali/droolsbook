@@ -2,24 +2,28 @@ package droolsbook.sampleApplication.server;
 
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
+import javax.persistence.PersistenceUnit;
 
 import org.drools.SystemEventListenerFactory;
 import org.drools.task.MockUserInfo;
-import org.drools.task.User;
-import org.drools.task.service.TaskService;
-import org.drools.task.service.TaskServiceSession;
-import org.drools.task.service.mina.MinaTaskServer;
+import org.jbpm.task.User;
+import org.jbpm.task.service.TaskService;
+import org.jbpm.task.service.TaskServiceSession;
+import org.jbpm.task.service.mina.MinaTaskServer;
 
 public class HumanTaskServer {
 
   MinaTaskServer server;
   
-  public HumanTaskServer() throws Exception {
-
-    EntityManagerFactory emf = Persistence
-        .createEntityManagerFactory("org.drools.task");
-
-    TaskService taskService = new TaskService(emf, SystemEventListenerFactory.getSystemEventListener());
+  //@PersistenceUnit
+  //private EntityManagerFactory emf;
+  
+  public void init() throws Exception {
+    
+	EntityManagerFactory emf = Persistence
+      .createEntityManagerFactory("org.jbpm.task");  
+	  
+	TaskService taskService = new TaskService(emf, SystemEventListenerFactory.getSystemEventListener());
     MockUserInfo userInfo = new MockUserInfo();
     taskService.setUserinfo(userInfo);
 
@@ -34,11 +38,14 @@ public class HumanTaskServer {
     Thread thread = new Thread(server);
     thread.start();
     Thread.sleep(500);
-    
   }
   
   public void destroy() {
     server.stop();
   }
+  
+  //public void setEmf(EntityManagerFactory emf) {
+//		this.emf = emf;
+//	}
 
 }
