@@ -7,9 +7,9 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.drools.task.query.TaskSummary;
-import org.drools.task.service.TaskClient;
-import org.drools.task.service.responsehandlers.BlockingTaskSummaryResponseHandler;
+import org.jbpm.task.query.TaskSummary;
+import org.jbpm.task.service.TaskClient;
+import org.jbpm.task.service.responsehandlers.BlockingTaskSummaryResponseHandler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.AbstractController;

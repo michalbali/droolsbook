@@ -9,6 +9,7 @@ import javax.persistence.PersistenceContext;
 import org.drools.command.runtime.process.SignalEventCommand;
 import org.drools.runtime.StatefulKnowledgeSession;
 import org.drools.runtime.process.ProcessInstance;
+import org.jbpm.process.workitem.wsht.WSHumanTaskHandler;
 import org.springframework.stereotype.Repository;
 
 import droolsbook.bank.model.Account;
@@ -17,7 +18,6 @@ import droolsbook.bank.model.Loan;
 import droolsbook.bank.model.LoanApprovalHolder;
 import droolsbook.bank.service.LoanApprovalService;
 import droolsbook.org.drools.persistence.KnowledgeSessionLookup;
-import droolsbook.sampleApplication.drools.persistence.JPAWSHumanTaskHandler;
 
 @Repository
 public class LoanApprovalServiceImpl implements
@@ -25,7 +25,7 @@ public class LoanApprovalServiceImpl implements
   
   private KnowledgeSessionLookup sessionLookup;
 
-  private JPAWSHumanTaskHandler approveLoanHandler;
+  private WSHumanTaskHandler approveLoanHandler;
   private Account loanSourceAccount;
   
   @PersistenceContext(unitName="entityManagerFactory")
@@ -87,8 +87,8 @@ public class LoanApprovalServiceImpl implements
       holder.setProcessInstanceId(processInstance.getId());
       em.persist(holder);
       
-      approveLoanHandler.addSessionId(
-        holder.getProcessInstanceId(), holder.getSessionId());
+      //approveLoanHandler.addSessionId(
+      //  holder.getProcessInstanceId(), holder.getSessionId());
 
       // session.insert(processInstance);
       session.fireAllRules();
@@ -126,9 +126,9 @@ public class LoanApprovalServiceImpl implements
     this.sessionLookup = sessionLookup;
   }
   
-  public void setApproveLoanHandler(
-      JPAWSHumanTaskHandler approveLoanHandler) {
-    this.approveLoanHandler = approveLoanHandler;
-  }
+  //public void setApproveLoanHandler(
+  //    JPAWSHumanTaskHandler approveLoanHandler) {
+  //  this.approveLoanHandler = approveLoanHandler;
+  //}
 
 }

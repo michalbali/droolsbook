@@ -1,9 +1,9 @@
 package droolsbook.sampleApplication.server;
 
 import org.drools.SystemEventListenerFactory;
-import org.drools.task.service.TaskClient;
-import org.drools.task.service.mina.MinaTaskClientConnector;
-import org.drools.task.service.mina.MinaTaskClientHandler;
+import org.jbpm.task.service.TaskClient;
+import org.jbpm.task.service.mina.MinaTaskClientConnector;
+import org.jbpm.task.service.mina.MinaTaskClientHandler;
 
 public class MinaTaskClientFactory {
 

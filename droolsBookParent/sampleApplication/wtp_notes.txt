@@ -1,0 +1,15 @@
+        <dependent-module archiveName="bankingcore-1.1-SNAPSHOT.jar" deploy-path="/WEB-INF/lib" handle="module:/classpath/lib/bankingcore/target/bankingcore-1.1-SNAPSHOT.jar">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <dependent-module archiveName="decision_tables-1.1-SNAPSHOT.jar" deploy-path="/WEB-INF/lib" handle="module:/classpath/lib/decision_tables/target/decision_tables-1.1-SNAPSHOT.jar">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <dependent-module archiveName="validation-1.1-SNAPSHOT.jar" deploy-path="/WEB-INF/lib" handle="module:/classpath/lib/validation/target/validation-1.1-SNAPSHOT.jar">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <dependent-module archiveName="droolsFlow-1.1-SNAPSHOT.jar" deploy-path="/WEB-INF/lib" handle="module:/classpath/lib/droolsFlow/target/droolsFlow-1.1-SNAPSHOT.jar">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <dependent-module archiveName="integration-1.1-SNAPSHOT.jar" deploy-path="/WEB-INF/lib" handle="module:/classpath/lib/integration/target/integration-1.1-SNAPSHOT.jar">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>

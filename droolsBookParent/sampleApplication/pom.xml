@@ -21,6 +21,12 @@
     <dependency>
       <groupId>droolsbook</groupId>
       <artifactId>droolsFlow</artifactId>
+      <exclusions>
+        <exclusion>
+          <groupId>javax.el</groupId>
+          <artifactId>el-api</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
     <dependency>
       <groupId>droolsbook</groupId>
@@ -53,7 +59,8 @@
       <artifactId>mina-core</artifactId>
     </dependency>
 
-    --><!--<dependency>
+    -->
+    <dependency>
       <groupId>org.slf4j</groupId>
       <artifactId>slf4j-jdk14</artifactId>
     </dependency>
@@ -62,10 +69,18 @@
       <artifactId>slf4j-api</artifactId>
     </dependency>
 
-    --><!-- Spring -->
+    <!-- Spring -->
+    <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-orm</artifactId>
+    </dependency>
     <dependency>
       <groupId>org.springframework</groupId>
       <artifactId>spring-context</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-tx</artifactId>
     </dependency>
     <dependency>
       <groupId>org.springframework</groupId>
@@ -159,15 +174,15 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-eclipse-plugin</artifactId>
+        <version>2.8</version>
         <configuration>
           <downloadSources>true</downloadSources>
-          <!--
-            <projectNameTemplate>[artifactId]-[version]</projectNameTemplate>
-          -->
+          <!-- <projectNameTemplate>[artifactId]-[version]</projectNameTemplate>  -->
           <wtpmanifest>true</wtpmanifest>
-          <wtpapplicationxml>true</wtpapplicationxml>
-          <wtpversion>1.5</wtpversion>
+          <!--<wtpapplicationxml>true</wtpapplicationxml>
+          --><wtpversion>2.0</wtpversion>
           <manifest>${basedir}/src/main/resources/META-INF/MANIFEST.MF</manifest>
+          <!-- useProjectReferences = false ? -->
         </configuration>
       </plugin>
     </plugins>

@@ -21,7 +21,7 @@ import org.drools.runtime.process.WorkItemManager;
 public class JPAKnowledgeSessionLookup implements
     KnowledgeSessionLookup {
 
-  @PersistenceUnit(unitName="droolsEntityManagerFactory")
+  @PersistenceUnit//(unitName="droolsEntityManagerFactory")
   private EntityManagerFactory emf;
 
   private KnowledgeBase knowledgeBase;
