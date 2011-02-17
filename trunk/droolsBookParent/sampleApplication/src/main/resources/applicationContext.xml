@@ -78,22 +78,22 @@
   <property name="knowledgeBase" 
     ref="loanApprovalKnowledge" />
   <property name="emailHandler" ref="emailWorkItemHandler"/>
-  <property name="humanTaskHandler" 
+  <!--<property name="humanTaskHandler" 
     ref="approveLoanWorkItemHandler"/>
-  <property name="transferFundsHandler" 
+  --><property name="transferFundsHandler" 
     ref="transferFundsWorkItemHandler"/>
 </bean>
 
   <bean name="emailWorkItemHandler" class="org.jbpm.process.instance.impl.demo.SystemOutWorkItemHandler" />
   <bean name="transferFundsWorkItemHandler" class="org.jbpm.process.instance.impl.demo.SystemOutWorkItemHandler" />
-  <bean name="approveLoanWorkItemHandler" class="org.jbpm.process.workitem.wsht.WSHumanTaskHandler" >
-    <!--<property name="transactionTemplate" 
+  <!--<bean name="approveLoanWorkItemHandler" class="org.jbpm.process.workitem.wsht.WSHumanTaskHandler" >
+    <property name="transactionTemplate" 
       ref="transactionTemplate" />
     <property name="knowledgeSessionLookup" 
       ref="knowledgeSessionLookup" />
-  --></bean> 
+  </bean> 
   
-<bean id="transactionTemplate" class="org.springframework.transaction.support.TransactionTemplate">
+--><bean id="transactionTemplate" class="org.springframework.transaction.support.TransactionTemplate">
     <property name="transactionManager" 
       ref="transactionManager" />
 </bean>
