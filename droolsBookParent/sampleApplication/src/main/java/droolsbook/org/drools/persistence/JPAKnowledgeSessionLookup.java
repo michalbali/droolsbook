@@ -13,6 +13,7 @@ import org.drools.runtime.EnvironmentName;
 import org.drools.runtime.StatefulKnowledgeSession;
 import org.drools.runtime.process.WorkItemHandler;
 import org.drools.runtime.process.WorkItemManager;
+import org.jbpm.process.workitem.wsht.WSHumanTaskHandler;
 
 // @extract-start 08 11
 /**
@@ -29,7 +30,7 @@ public class JPAKnowledgeSessionLookup implements
   
   private WorkItemHandler emailHandler;
   private WorkItemHandler transferFundsHandler;
-  private WorkItemHandler humanTaskHandler;  
+  /*private WorkItemHandler humanTaskHandler;  */
 
   public void init() {
     environment = EnvironmentFactory.newEnvironment();
@@ -65,7 +66,7 @@ public class JPAKnowledgeSessionLookup implements
       StatefulKnowledgeSession session) {
     WorkItemManager manager = session.getWorkItemManager();
     manager.registerWorkItemHandler("Human Task",
-        humanTaskHandler);
+        new WSHumanTaskHandler());
     manager.registerWorkItemHandler("Email", emailHandler);
     manager.registerWorkItemHandler("Transfer Funds", 
         transferFundsHandler);
@@ -85,9 +86,9 @@ public class JPAKnowledgeSessionLookup implements
     this.transferFundsHandler = transferFundsHandler;
   }
   
-  public void setHumanTaskHandler(
+  /*public void setHumanTaskHandler(
       WorkItemHandler humanTaskHandler) {
     this.humanTaskHandler = humanTaskHandler;
-  }
+  }*/
 
 }
