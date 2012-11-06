@@ -88,7 +88,7 @@ end
 // @extract-start 03 60
 rule "studentAccountCustomerAgeLessThan"
 	when				
-		Customer( eval (yearsPassedSince(dateOfBirth) >= 27) )
+		Customer( yearsPassedSince(dateOfBirth) >= 27 )
 		$account : Account( type == Account.Type.STUDENT )		
 	then
 		error(kcontext, $account);
@@ -107,8 +107,8 @@ end
 // @extract-start 03 61
 rule "accountNumberUnique"
 	when
-		$account : Account(eval(
-			!inquiryService.isAccountNumberUnique($account)))
+		$account : Account(
+			!inquiryService.isAccountNumberUnique($account))
 	then
 		error(kcontext, $account);
 end
