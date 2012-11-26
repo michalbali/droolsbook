@@ -58,8 +58,7 @@ public class DataTransformationServiceImpl implements DataTransformationService 
     commands.add(CommandFactory.newSetGlobal(
         "validationReport", validationReport));
     commands.add(CommandFactory.newInsert(customerMap));
-    commands.add(new FireAllRulesCommand(
-        new RuleNameEqualsAgendaFilter("findAllCustomers")));
+    commands.add(new FireAllRulesCommand());
     commands.add(CommandFactory.newQuery(
         "address", "getAddressByCustomerId",
         new Object[] { customerMap }));

@@ -280,7 +280,7 @@ public class DataTransformationTest {
         "currencyConversionToEUR", null, null);
 
     assertEquals("EUR", accountMap.get("currency"));
-    assertEquals(new BigDecimal("670.000"), accountMap
+    assertEquals(new BigDecimal("780.000"), accountMap
         .get("balance"));
   }
   // @extract-end
