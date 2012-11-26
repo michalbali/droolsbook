@@ -10,13 +10,11 @@ import droolsbook.bank.model.Address.Country;
 global LegacyBankService legacyService;
 
 rule findAllCustomers
-dialect "mvel"
 	when
 		$customerMap : Map( ) 
 			from legacyService.findAllCustomers()		
 	then	
 		$customerMap.put("_type_", "Customer");
-		//$customerMap["_type_"] = "Customer";	
 		insert( $customerMap );
 end
 // @extract-end
@@ -31,7 +29,6 @@ global ReportFactory reportFactory;
 import function droolsbook.bank.service.ValidationHelper.*;
 
 
-
 // @extract-start 03 05
 rule findAddress
 dialect "mvel"
@@ -39,9 +36,8 @@ dialect "mvel"
 		$customerMap : Map( this["_type_"] == "Customer" )
 		$addressMap : Map( ) 
 			from legacyService.findAddressByCustomerId( 
-				$customerMap["customer_id"] )		
+				(Long) $customerMap["customer_id"] )		
 	then		
-		//$addressMap["_type_"] = "Address"
 		$addressMap.put("_type_", "Address");
 		insert( $addressMap )
 end
@@ -51,9 +47,10 @@ rule findAccount
 dialect "mvel"
 	when
 		$customerMap : Map( this["_type_"] == "Customer" )
-		$accountMap : Map( ) from legacyService.findAccountByCustomerId( $customerMap["customer_id"])		
+		$accountMap : Map( ) from legacyService.findAccountByCustomerId((Long) $customerMap["customer_id"])		
 	then		
-		$accountMap["_type_"] = "Account"
+		//$accountMap["_type_"] = "Account"
+		$accountMap.put("_type_", "Account");
 		insert( $accountMap )
 end
 
@@ -120,8 +117,8 @@ rule unknownCountry
 salience -10 //should fire after address normalizations
 	when
 		$addressMap : Map( this["_type_"] == "Address",
-		    eval(!($addressMap.get("country") instanceof 
-		    Address.Country)))
+		    !($addressMap.get("country") instanceof 
+		    Address.Country))
 	then
 		validationReport.addMessage(
 			reportFactory.createMessage(Message.Type.ERROR, 
@@ -155,7 +152,7 @@ import java.math.BigDecimal;
 function String getConversionToEurFrom(String currencyFrom) {
 	String conversion = null;
 	if ("USD".equals(currencyFrom)) {
-		conversion = "0.670";
+		conversion = "0.780";
 	} else if ("SKK".equals(currencyFrom)) {
 		conversion = "0.033";
 	}
@@ -169,7 +166,8 @@ rule currencyConversionToEUR
 		$accountMap : Map( this["_type_"] == "Account", 
 			this["currency"] != null && != "EUR" )
 		$conversionAmount : String() from 
-			getConversionToEurFrom($accountMap["currency"])
+			getConversionToEurFrom(
+				(String)$accountMap["currency"])
 	then
 		modify($accountMap) {
 			put("currency", "EUR"),	 
@@ -186,7 +184,8 @@ rule unknownCurrency
 		$accountMap : Map( this["_type_"] == "Account", 
 			this["currency"] != null && != "EUR" )
 		not( String() from 
-			getConversionToEurFrom($accountMap["currency"]) )
+			getConversionToEurFrom(
+				(String)$accountMap["currency"]) )
 	then
 		 validationReport.addMessage(
 			reportFactory.createMessage(Message.Type.ERROR, 
