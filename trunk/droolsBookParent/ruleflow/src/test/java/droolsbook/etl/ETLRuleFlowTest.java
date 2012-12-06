@@ -26,6 +26,7 @@ import org.drools.runtime.StatefulKnowledgeSession;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import droolsbook.bank.service.ReportFactory;
@@ -81,7 +82,7 @@ public class ETLRuleFlowTest {
     builder.add(ResourceFactory.newClassPathResource(
         "dataTransformation-ruleflow.drl"), ResourceType.DRL);
     builder.add(ResourceFactory.newClassPathResource(
-        "dataTransformation.rf"), ResourceType.DRF);
+        "dataTransformation.bpmn"), ResourceType.BPMN2);
     if (builder.hasErrors()) {
       throw new RuntimeException(builder.getErrors()
           .toString());

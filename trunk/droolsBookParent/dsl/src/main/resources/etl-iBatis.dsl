@@ -6,13 +6,13 @@
 
 [condition][] There is {object}-{id} = ${object}{id} : Map( this["_type_"] == "{object}" )
 
-[condition][]unknown conversion value for this currency = not( String() from getConversionToEurFrom($Account1["currency"]) )
+[condition][]unknown conversion value for this currency = not( String() from getConversionToEurFrom((String)$Account1["currency"]) )
 
 [condition][]- has no {field}=this["{field}"] == null
 [condition][]- same as {object}-{id} = this == ${object}{id}, eval( ${object}1 != ${object}2 )
 [condition][]- country is one of {country_list} = this["country"] in ({country_list})
-[condition][]- country is not normalized = eval(!($Address1.get("country") instanceof Address.Country))
-[condition][]- "{field}" is same as in {object}-{id}=this["{field}"] == ${object}{id}["{field}"], eval( ${object}1 != ${object}2 )
+[condition][]- country is not normalized = !($Address1.get("country") instanceof Address.Country)
+[condition][]- "{field}" is same as in {object}-{id:\d+}=this["{field}"] == ${object}{id}["{field}"], eval( ${object}1 != ${object}2 )
 [condition][]- has {field} different to {value}= this["{field}"] != null && != "{value}"
 
 #we don't need id in consequences

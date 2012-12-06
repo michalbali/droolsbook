@@ -9,3 +9,19 @@ rule "hello rule"
     Greet Customer
 end
 // @extract-end
+
+
+declare License
+
+end
+
+rule "transformationFunction"
+  when
+    There is a License
+  then
+>  	System.out.println("ok");
+end
+
+
+
+

@@ -15,7 +15,8 @@ dialect "mvel"
 		$customerMap : Map( ) 
 			from legacyService.findAllCustomers()		
 	then	
-		$customerMap["_type_"] = "Customer"	
+		//$customerMap["_type_"] = "Customer"	
+		$customerMap.put("_type_", "Customer");
 		insert( $customerMap )
 end
 
@@ -39,7 +40,8 @@ dialect "mvel"
 			from legacyService.findAddressByCustomerId( 
 				$customerMap["customer_id"] )		
 	then		
-		$addressMap["_type_"] = "Address"
+		//$addressMap["_type_"] = "Address"
+		$addressMap.put("_type_", "Address");
 		insert( $addressMap )
 end
 
@@ -50,7 +52,8 @@ dialect "mvel"
 		$customerMap : Map( this["_type_"] == "Customer" )
 		$accountMap : Map( ) from legacyService.findAccountByCustomerId( $customerMap["customer_id"])		
 	then		
-		$accountMap["_type_"] = "Account"
+		//$accountMap["_type_"] = "Account"
+		$accountMap.put("_type_", "Account");
 		insert( $accountMap )
 end
 
@@ -166,7 +169,7 @@ ruleflow-group "default"
 		$accountMap : Map( this["_type_"] == "Account", 
 			this["currency"] != null && != "EUR" )
 		$conversionAmount : String() from 
-			getConversionToEurFrom($accountMap["currency"])
+			getConversionToEurFrom((String)$accountMap["currency"])
 	then
 		modify($accountMap) {
 			put("currency", "EUR"),	 
@@ -182,7 +185,7 @@ ruleflow-group "default"
 		$accountMap : Map( this["_type_"] == "Account", 
 			this["currency"] != null && != "EUR" )
 		not( String() from 
-			getConversionToEurFrom($accountMap["currency"]) )
+			getConversionToEurFrom((String)$accountMap["currency"]) )
 	then
 		 validationReport.addMessage(
 			reportFactory.createMessage(Message.Type.ERROR, 
@@ -199,7 +202,7 @@ dialect "mvel"
 	then
 		modify($accountMap) {
 			this["currency"] = "EUR",	 
-			this["balance"] = (BigDecimal) new BigDecimal($accountMap.get("balance")).multiply(getConversionToEurFrom($accountMap.get("balance")))
+			this["balance"] = (BigDecimal) new BigDecimal($accountMap.get("balance")).multiply((String)getConversionToEurFrom($accountMap.get("balance")))
 		} 
 end
 */

@@ -85,7 +85,7 @@ public class InterestRateDecisionTableTest {
 //todo note that the xls is behind the scenes converted into a drl; it is done by the 
 //  DecisiontableFactory.loadFromInputStream method; 
 //  you can use this drl and examine its contents if it looks as you're expecting
-  private void method(DecisionTableConfiguration dtconf) throws Exception {
+  private static void method(DecisionTableConfiguration dtconf) throws Exception {
     // @extract-start 04 75
     String drlString = DecisionTableFactory
         .loadFromInputStream(ResourceFactory
