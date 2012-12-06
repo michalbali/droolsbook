@@ -20,7 +20,7 @@ import function droolsbook.bank.service.ValidationHelper.*;
 function String getConversionToEurFrom(String currencyFrom) {
 	String conversion = null;
 	if ("USD".equals(currencyFrom)) {
-		conversion = "0.670";
+		conversion = "0.780";
 	} else if ("SKK".equals(currencyFrom)) {
 		conversion = "0.033";
 	}
@@ -117,7 +117,7 @@ Apply after currency conversions
 	when
 		There is legacy Account-1
 		There is legacy Account-2
-		- "customer_id" is same as in legacy Account-1		
+		- "customer_id" is same as in legacy Account-1
 	then
 		for legacy Account-1 set balance to sum balances
 		remove legacy Account-2

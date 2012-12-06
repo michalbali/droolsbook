@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?> 
+<definitions id="Definition"
+             targetNamespace="http://www.jboss.org/drools"
+             typeLanguage="http://www.java.com/javaTypes"
+             expressionLanguage="http://www.mvel.org/2.0"
+             xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL"
+             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+             xsi:schemaLocation="http://www.omg.org/spec/BPMN/20100524/MODEL BPMN20.xsd"
+             xmlns:g="http://www.jboss.org/drools/flow/gpd"
+             xmlns:tns="http://www.jboss.org/drools">
+
+  <process processType="Private" isExecutable="true" id="dataTransformation" name="flow" tns:packageName="droolsbook.ruleflow.transform" >
+
+    <!-- nodes -->
+    <startEvent id="_1" name="Start" g:x="134" g:y="16" g:width="80" g:height="40" />
+    <businessRuleTask id="_2" name="address normalization" g:x="16" g:y="160" g:width="166" g:height="40" g:ruleFlowGroup="address normalization" >
+    </businessRuleTask>
+    <businessRuleTask id="_3" name="unknown country" g:x="97" g:y="232" g:width="126" g:height="40" g:ruleFlowGroup="unknown country" >
+    </businessRuleTask>
+    <endEvent id="_4" name="End" g:x="209" g:y="376" g:width="80" g:height="40" >
+        <terminateEventDefinition/>
+    </endEvent>
+    <parallelGateway id="_5" name="Split" g:x="134" g:y="88" g:width="80" g:height="40" gatewayDirection="Diverging" />
+    <businessRuleTask id="_6" name="default" g:x="214" g:y="160" g:width="71" g:height="40" g:ruleFlowGroup="default" >
+    </businessRuleTask>
+    <parallelGateway id="_9" name="Join" g:x="209" g:y="304" g:width="80" g:height="40" gatewayDirection="Converging" />
+
+    <!-- connections -->
+    <sequenceFlow id="_5-_2" sourceRef="_5" targetRef="_2" />
+    <sequenceFlow id="_2-_3" sourceRef="_2" targetRef="_3" />
+    <sequenceFlow id="_9-_4" sourceRef="_9" targetRef="_4" />
+    <sequenceFlow id="_1-_5" sourceRef="_1" targetRef="_5" />
+    <sequenceFlow id="_5-_6" sourceRef="_5" targetRef="_6" />
+    <sequenceFlow id="_6-_9" sourceRef="_6" targetRef="_9" />
+    <sequenceFlow id="_3-_9" sourceRef="_3" targetRef="_9" />
+
+  </process>
+
+</definitions>
