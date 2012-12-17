@@ -21,21 +21,21 @@ rule "addressRequired"
 	when
 		Customer( address == null )
 	then
-		warning(drools);
+		warning(kcontext);
 end
 
 rule "phoneNumberRequired"
  	when
  		Customer( phoneNumber == null || == "" )		
 	then
-		error(drools);
+		error(kcontext);
 end
 
 rule "accountOwnerRequired"
 	when
 		$account : Account( owner == null )		
 	then		
-		error(drools, $account);
+		error(kcontext, $account);
 end
 
 rule "studentAccountCustomerAgeLessThan"
@@ -43,14 +43,14 @@ rule "studentAccountCustomerAgeLessThan"
 		Customer( eval (yearsPassedSince(dateOfBirth) >= 27) )
 		$account : Account( type == Account.Type.STUDENT )		
 	then
-		error(drools, $account);
+		error(kcontext, $account);
 end
 
 rule "accountBalanceAtLeast"
 	when
 		$account : Account( balance < 100 )		
 	then		
-		warning(drools, $account);
+		warning(kcontext, $account);
 end 
 
 rule "accountNumberUnique"
@@ -58,7 +58,7 @@ rule "accountNumberUnique"
 		$account : Account(eval(
 			!inquiryService.isAccountNumberUnique($account)))		
 	then
-		error(drools, $account);
+		error(kcontext, $account);
 end
 
 
@@ -85,3 +85,21 @@ salience -1000 //should be the last rule to fire
 end
 // @extract-end
 
+/*
+//the following does not work because messages are not updated
+rule resetReport
+salience -900
+	when
+		
+	then
+		validationReport.reset();
+end
+
+rule addMessage
+salience -1000
+	when
+		$message : Message( )
+	then
+		validationReport.addMessage($message);
+end
+*/
