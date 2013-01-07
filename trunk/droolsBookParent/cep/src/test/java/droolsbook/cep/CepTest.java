@@ -26,11 +26,13 @@ import org.drools.runtime.conf.ClockTypeOption;
 import org.drools.runtime.rule.FactHandle;
 import org.drools.runtime.rule.QueryResults;
 import org.drools.runtime.rule.QueryResultsRow;
+import org.drools.runtime.rule.Variable;
 import org.drools.runtime.rule.WorkingMemoryEntryPoint;
 import org.drools.time.SessionPseudoClock;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import droolsbook.accumulator.BigDecimalAverageAccumulateFunction;
@@ -176,7 +178,6 @@ builderConf.setOption(AccumulateFunctionOption.get(
   // @extract-end
 
   // @extract-start 06 10
-  /* TODO book2, fix this test !! it is unknown why it fails
   @Test
   public void sequenceOfIncreasingWithdrawals()
       throws Exception {
@@ -201,7 +202,7 @@ builderConf.setOption(AccumulateFunctionOption.get(
     transactionCreatedEvent(400);
     clock.advanceTime(1, TimeUnit.MICROSECONDS);
     assertFired("sequenceOfIncreasingWithdrawals");
-  }*/
+  }
   // @extract-end
 
   private void assertNotFired(String ruleName) {
@@ -340,6 +341,59 @@ builderConf.setOption(AccumulateFunctionOption.get(
     assertFired("highActivity");
   }
   // @extract-end
+  
+  /*
+  @Test
+  public void highActivity_withQuery() throws Exception {
+    entry = session
+        .getWorkingMemoryEntryPoint("TransactionStream");
+    for (int i = 0; i < 30; i++) {
+      for (int j = 0; j < 10; j++) {
+        transactionCompletedEvent(400+i);
+        clock.advanceTime(1, TimeUnit.DAYS);
+      }
+    }    
+    for (int i = 0; i < 70; i++) {
+      transactionCompletedEvent(400+i);
+    }
+    
+    QueryResults queryResults = session.getQueryResults("numberOfTransactions1DayQuery", account.getNumber(), Variable.v);
+    assertEquals(1, queryResults.size());
+    assertEquals(account.getNumber(), queryResults.iterator().next().get("accountNumber"));
+    //assertEquals(70, queryResults.iterator().next().get("sum"));
+    
+    QueryResults queryResults2 = session.getQueryResults("numberOfTransactions1DayQuery", Variable.v, 99);
+    assertEquals(1, queryResults2.size());
+    assertEquals(account.getNumber(), queryResults2.iterator().next().get("accountNumber"));
+    assertEquals(70, queryResults2.iterator().next().get("sum"));
+    
+    accountInfoFactType.set(accountInfo,
+        "averageNumberOfTransactions",BigDecimal.valueOf(10));
+    accountInfoFactType.set(accountInfo,
+        "numberOfTransactions1Day", 40l);
+    accountInfoFactType.set(accountInfo, "averageBalance",
+        BigDecimal.valueOf(9000));
+    session.update(accountInfoHandle, accountInfo);
+    assertNotFired("highActivity");
+
+//    accountInfoFactType.set(accountInfo, "averageBalance",
+//        BigDecimal.valueOf(11000));
+//    session.update(accountInfoHandle, accountInfo);
+//    assertNotFired("highActivity");
+
+    accountInfoFactType.set(accountInfo,
+        "numberOfTransactions1Day", 60l);
+    accountInfoFactType.set(accountInfo, "averageBalance",
+        BigDecimal.valueOf(6000));
+    session.update(accountInfoHandle, accountInfo);
+    assertNotFired("highActivity");
+
+    accountInfoFactType.set(accountInfo, "averageBalance",
+        BigDecimal.valueOf(11000));
+    session.update(accountInfoHandle, accountInfo);
+    assertFired("highActivity");
+  }
+  */
 
   private BigDecimal getAverageBalanceOverMonth() {
     QueryResults queryResults = session.getQueryResults(
