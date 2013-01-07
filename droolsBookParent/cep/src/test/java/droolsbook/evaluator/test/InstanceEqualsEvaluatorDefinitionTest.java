@@ -5,6 +5,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import java.util.Arrays;
+import java.util.List;
 
 import org.drools.KnowledgeBase;
 import org.drools.RuleBase;
@@ -12,11 +13,13 @@ import org.drools.StatelessSession;
 import org.drools.builder.KnowledgeBuilderConfiguration;
 import org.drools.builder.KnowledgeBuilderFactory;
 import org.drools.builder.conf.EvaluatorOption;
+import org.drools.command.CommandFactory;
 import org.drools.compiler.PackageBuilderConfiguration;
 import org.drools.runtime.StatelessKnowledgeSession;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import droolsbook.bank.model.Customer;
@@ -64,15 +67,15 @@ public class InstanceEqualsEvaluatorDefinitionTest {
     Customer customer = new Customer();
     Account account = new Account();
 
-    session.execute(Arrays.asList(customer, account));
+    execute(Arrays.asList(customer, account));
     assertNotFired("accountHasCustomer");
 
     account.setOwner(new Customer());
-    session.execute(Arrays.asList(customer, account));
+    execute(Arrays.asList(customer, account));
     assertNotFired("accountHasCustomer");
 
     account.setOwner(customer);
-    session.execute(Arrays.asList(customer, account));
+    execute(Arrays.asList(customer, account));
     assertFired("accountHasCustomer");
   }
 
@@ -93,16 +96,16 @@ public class InstanceEqualsEvaluatorDefinitionTest {
     Customer customer = new Customer();
     Account account = new Account();
 
-    session.execute(Arrays.asList(customer, account));
+    execute(Arrays.asList(customer, account));
     assertFired("accountHasCustomerNot");
 
     account.setOwner(customer);
     trackingAgendaEventListener.reset();
-    session.execute(Arrays.asList(customer, account));
+    execute(Arrays.asList(customer, account));
     assertNotFired("accountHasCustomerNot");
 
     account.setOwner(new Customer());
-    session.execute(Arrays.asList(customer, account));
+    execute(Arrays.asList(customer, account));
     assertFired("accountHasCustomerNot");
   }
 
@@ -114,27 +117,33 @@ public class InstanceEqualsEvaluatorDefinitionTest {
     holder.setCustomer2(null);
 
     trackingAgendaEventListener.reset();
-    session.execute(Arrays.asList(holder));
+    execute(Arrays.asList(holder));
     assertFired("twoFieldsOnOneFact");
     assertNotFired("twoFieldsOnOneFactNot");
 
     holder.setCustomer1(customer);
     trackingAgendaEventListener.reset();
-    session.execute(Arrays.asList(holder));
+    execute(Arrays.asList(holder));
     assertNotFired("twoFieldsOnOneFact");
     assertFired("twoFieldsOnOneFactNot");
 
     holder.setCustomer2(new Customer());
     trackingAgendaEventListener.reset();
-    session.execute(Arrays.asList(holder));
+    execute(Arrays.asList(holder));
     assertNotFired("twoFieldsOnOneFact");
     assertFired("twoFieldsOnOneFactNot");
 
     holder.setCustomer2(customer);
     trackingAgendaEventListener.reset();
-    session.execute(Arrays.asList(holder));
+    execute(Arrays.asList(holder));
     assertFired("twoFieldsOnOneFact");
     assertNotFired("twoFieldsOnOneFactNot");
+  }
+  
+  private void execute(List<?> objects) {
+    //note: it seems that after calling execute the agenda event listener seems to be disassociated from the session
+    session.addEventListener(trackingAgendaEventListener);
+    session.execute(objects);
   }
 
 }
