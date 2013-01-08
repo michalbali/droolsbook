@@ -109,6 +109,10 @@ System.out.println("exception == " + variableScopeInstance.getVariable("exceptio
         <parameter name="Content" >
           <type name="org.drools.process.core.datatype.impl.type.StringDataType" />
         </parameter>
+        <parameter name="GroupId" >
+          <type name="org.drools.process.core.datatype.impl.type.StringDataType" />
+          <value></value>
+        </parameter>
         <parameter name="Priority" >
           <type name="org.drools.process.core.datatype.impl.type.StringDataType" />
           <value>3</value>
