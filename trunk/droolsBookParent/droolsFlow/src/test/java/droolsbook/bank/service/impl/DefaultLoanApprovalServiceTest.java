@@ -6,8 +6,6 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.math.BigDecimal;
-import java.net.InetSocketAddress;
-import java.net.SocketAddress;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -15,7 +13,6 @@ import java.util.Map;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
 
-import org.apache.mina.transport.socket.nio.NioSocketConnector;
 import org.drools.KnowledgeBase;
 import org.drools.KnowledgeBaseConfiguration;
 import org.drools.KnowledgeBaseFactory;
@@ -27,7 +24,6 @@ import org.drools.builder.KnowledgeBuilderFactory;
 import org.drools.builder.ResourceType;
 import org.drools.common.AbstractRuleBase;
 import org.drools.io.ResourceFactory;
-import org.jbpm.process.workitem.wsht.WSHumanTaskHandler;
 import org.drools.runtime.ClassObjectFilter;
 import org.drools.runtime.StatefulKnowledgeSession;
 import org.drools.runtime.process.ProcessInstance;
@@ -36,19 +32,15 @@ import org.drools.runtime.process.WorkItemHandler;
 import org.drools.runtime.process.WorkItemManager;
 import org.drools.runtime.process.WorkflowProcessInstance;
 import org.drools.task.MockUserInfo;
+import org.jbpm.process.instance.impl.demo.SystemOutWorkItemHandler;
+import org.jbpm.process.workitem.wsht.LocalHTWorkItemHandler;
 import org.jbpm.task.Status;
 import org.jbpm.task.User;
 import org.jbpm.task.query.TaskSummary;
-import org.jbpm.task.service.TaskClient;
-import org.jbpm.task.service.TaskClientHandler;
 import org.jbpm.task.service.TaskService;
 import org.jbpm.task.service.TaskServiceSession;
-import org.jbpm.task.service.mina.MinaTaskClientConnector;
-import org.jbpm.task.service.mina.MinaTaskClientHandler;
-import org.jbpm.task.service.mina.MinaTaskServer;
-import org.jbpm.task.service.responsehandlers.BlockingTaskOperationResponseHandler;
-import org.jbpm.task.service.responsehandlers.BlockingTaskSummaryResponseHandler;
-import org.jbpm.process.instance.impl.demo.SystemOutWorkItemHandler;
+import org.jbpm.task.service.local.LocalTaskService;
+import org.jbpm.task.utils.OnErrorAction;
 import org.jmock.Expectations;
 import org.jmock.Mockery;
 import org.jmock.integration.junit4.JMock;
@@ -111,9 +103,10 @@ public class DefaultLoanApprovalServiceTest {
   public static void setUpClass() throws Exception {
     KnowledgeBuilder builder = KnowledgeBuilderFactory.newKnowledgeBuilder();
     builder.add(ResourceFactory.newClassPathResource("loanApproval.drl"), ResourceType.DRL);
+    //TODO: builder.add(ResourceFactory.newClassPathResource("loanApproval.bpmn"), ResourceType.BPMN2); //problem with loan rating variable
     builder.add(ResourceFactory.newClassPathResource("loanApproval.rf"), ResourceType.DRF);
     builder.add(ResourceFactory.newClassPathResource("ratingCalculation.drl"), ResourceType.DRL);
-    builder.add(ResourceFactory.newClassPathResource("ratingCalculation.rf"), ResourceType.DRF);
+    builder.add(ResourceFactory.newClassPathResource("ratingCalculation.bpmn"), ResourceType.BPMN2);
     
     if (builder.hasErrors()) {
       throw new RuntimeException(builder.getErrors().toString());
@@ -181,16 +174,15 @@ public class DefaultLoanApprovalServiceTest {
         PROCESS_LOAN_APPROVAL, parameterMap);
     session.insert(processInstance);
     session.fireAllRules();
-    
-		// important note: Be careful when starting a process instance and then
-		// inserting the process instance into the session, if there are rules
-		// that react to a process instance then the 'startProcess' may not
-		// trigger them; what seems to be happening is that when the process is
-		// started it runs until it comes to a wait state or a ruleflow group
-		// that has some activated rules, then it waits for the fireAllRules
-		// call. 
   }
-  // @extract-end
+  // @extract-end  
+  // important note: Be careful when starting a process instance and then
+  // inserting the process instance into the session, if there are rules
+  // that react to a process instance then the 'startProcess' may not
+  // trigger them; what seems to be happening is that when the process is
+  // started it runs until it comes to a wait state or a ruleflow group
+  // that has some activated rules, then it waits for the fireAllRules
+  // call. 
   
   @After
   public void onShutDown() {
@@ -380,13 +372,15 @@ public class DefaultLoanApprovalServiceTest {
 
   // @extract-start 07 11  
   @Test
-  @Ignore("for now fixme book2")
   public void processLoan() throws Exception {
     EntityManagerFactory emf = Persistence
-        .createEntityManagerFactory("droolsBook.droolsFlow");
+        .createEntityManagerFactory("droolsbook.jbpm");
 
     TaskService taskService = new TaskService(emf, 
         SystemEventListenerFactory.getSystemEventListener());
+    LocalTaskService localTaskService = new LocalTaskService(
+        taskService);
+    
     MockUserInfo userInfo = new MockUserInfo();
     taskService.setUserinfo(userInfo);
     
@@ -397,20 +391,10 @@ public class DefaultLoanApprovalServiceTest {
     taskSession.addUser(new User("456"));
     taskSession.addUser(new User("789"));
 
-    MinaTaskServer server = new MinaTaskServer(taskService);
-    Thread thread = new Thread(server);
-    thread.start();
-    
-    //wait until the server becomes active
-    int timeoutCounter = 0;
-    while ((server.getIoAcceptor() == null || !server
-        .getIoAcceptor().isActive())
-        && timeoutCounter++ < 1000) {
-      Thread.sleep(10);
-    }
-    assertTrue(server.getIoAcceptor().isActive());
-
-    WorkItemHandler htHandler = new WSHumanTaskHandler();
+    LocalHTWorkItemHandler htHandler = 
+        new LocalHTWorkItemHandler( localTaskService, session,
+        OnErrorAction.RETHROW);
+    htHandler.connect();
     session.getWorkItemManager().registerWorkItemHandler(
         "Human Task", htHandler);
     setUpLowAmount();
@@ -418,24 +402,8 @@ public class DefaultLoanApprovalServiceTest {
     // @extract-end
 
     // @extract-start 07 12
-    TaskClient client = new TaskClient(new MinaTaskClientConnector("client 1",
-    		new MinaTaskClientHandler(SystemEventListenerFactory.getSystemEventListener())));
-    boolean isConnected = client.connect("127.0.0.1", 9123);
-    assertTrue(isConnected);
-
-    BlockingTaskSummaryResponseHandler summaryHandler = 
-        new BlockingTaskSummaryResponseHandler();
-    timeoutCounter = 0;
-    List<TaskSummary> tasks;
-    do {
-      client.getTasksAssignedAsPotentialOwner("123", "en-UK",
-          summaryHandler);
-      tasks = summaryHandler.getResults();
-      //wait until the task is registered with the server or timeout expires
-      if (timeoutCounter != 0) {
-        Thread.sleep(10);
-      }
-    } while (tasks.isEmpty() && timeoutCounter++ < 1000);
+    List<TaskSummary> tasks = localTaskService
+        .getTasksAssignedAsPotentialOwner("123", "en-UK");
     assertEquals(1, tasks.size());
     TaskSummary task = tasks.get(0);
     assertEquals("Process Loan", task.getName());
@@ -444,35 +412,12 @@ public class DefaultLoanApprovalServiceTest {
     // @extract-end
 
     // @extract-start 07 13
-    BlockingTaskOperationResponseHandler operationHandler = 
-        new BlockingTaskOperationResponseHandler();
-    client.claim(task.getId(), "123", operationHandler);
-    operationHandler.waitTillDone(5000);
-
-    operationHandler = 
-        new BlockingTaskOperationResponseHandler();
-    client.start(task.getId(), "123", operationHandler);
-    operationHandler.waitTillDone(5000);
-
-    operationHandler = 
-        new BlockingTaskOperationResponseHandler();
-    client.complete(task.getId(), "123", null,
-        operationHandler);
-    operationHandler.waitTillDone(5000);
-    
-    //wait until the process resumes or timeout expires
-    timeoutCounter = 0;
-    while (!trackingProcessEventListener.isNodeTriggered(
-        PROCESS_LOAN_APPROVAL, NODE_JOIN_PROCESS_LOAN)
-        && timeoutCounter++ < 1000) {
-      Thread.sleep(10);
-    } 
+    localTaskService.claim(task.getId(), "123");
+    localTaskService.start(task.getId(), "123");
+    localTaskService.complete(task.getId(), "123", null);
     
     assertTrue(trackingProcessEventListener.isNodeTriggered(
         PROCESS_LOAN_APPROVAL, NODE_JOIN_PROCESS_LOAN));
-    
-    client.disconnect();
-    server.stop();
   }
   // @extract-end
 
