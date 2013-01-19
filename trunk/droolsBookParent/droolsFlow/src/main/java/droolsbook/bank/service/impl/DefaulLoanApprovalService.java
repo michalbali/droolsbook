@@ -34,7 +34,7 @@ public class DefaulLoanApprovalService /*implements LoanApprovalService*/ {
     StatefulKnowledgeSession session = knowledgeBase
         .newStatefulKnowledgeSession();    
     try {
-      //TODO: register workitem/human task handlers
+      registerWorkItemHandlers(session);
       Map<String, Object> parameterMap = 
         new HashMap<String, Object>();
       parameterMap.put("loanSourceAccount",loanSourceAccount);
@@ -52,6 +52,12 @@ public class DefaulLoanApprovalService /*implements LoanApprovalService*/ {
   }
   // @extract-end
   
+  private void registerWorkItemHandlers(
+      StatefulKnowledgeSession session) {
+    // TODO Auto-generated method stub
+    
+  }
+
   public void setKnowledgeBase(KnowledgeBase knowledgeBase) {
     this.knowledgeBase = knowledgeBase;
   }

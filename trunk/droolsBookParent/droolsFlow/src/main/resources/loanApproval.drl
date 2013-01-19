@@ -23,3 +23,9 @@ ruleflow-group "validateLoan"
 	then
 		insert(new DefaultMessage());
 end
+
+
+//processInstance : WorkflowProcessInstance( 
+//  getVariable("customerLoanRating") >=1000 )
+//or
+//customerLoanRating >= 1000
