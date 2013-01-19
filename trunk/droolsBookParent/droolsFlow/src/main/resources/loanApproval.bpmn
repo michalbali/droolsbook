@@ -93,6 +93,14 @@
 //the following is just to prevent some parsing error because this action contains only comments
 System.out.println("");</tns:script>
         </tns:onExit-script>
+        <tns:onExit-script scriptFormat="http://www.java.com/java">
+          <tns:script>//this is to show another way how to use actions to set the variable
+//Rating rating = (Rating)kcontext.getKnowledgeRuntime().getObjects(new ClassObjectFilter(Rating.class)).iterator().next();
+//context.setVariable("customerLoanRating", rating.getRating());
+//kcontext.getKnowledgeRuntime().update(kcontext.getKnowledgeRuntime().getFactHandle(context.getProcessInstance()), context.getProcessInstance());
+//the following is to stop Drools complaining
+System.out.println("");</tns:script>
+        </tns:onExit-script>
       </extensionElements>
       <ioSpecification>
         <dataInput id="_7_loanInput" name="loan" />
@@ -304,7 +312,7 @@ Customer Service Team</from>
       <conditionExpression xsi:type="tFormalExpression" language="http://www.jboss.org/drools/rule" >Loan( amount &lt;= 5000 )</conditionExpression>
     </sequenceFlow>
     <sequenceFlow id="_8-_5" sourceRef="_8" targetRef="_5" name="accept" tns:priority="1" >
-      <conditionExpression xsi:type="tFormalExpression" >customerLoanRating &gt;=1000</conditionExpression>
+      <conditionExpression xsi:type="tFormalExpression" >customerLoanRating &gt;= 1000</conditionExpression>
     </sequenceFlow>
     <sequenceFlow id="_4-_7" sourceRef="_4" targetRef="_7" name="otherwise" tns:priority="100" >
       <conditionExpression xsi:type="tFormalExpression" language="http://www.jboss.org/drools/rule" >eval(true)</conditionExpression>
