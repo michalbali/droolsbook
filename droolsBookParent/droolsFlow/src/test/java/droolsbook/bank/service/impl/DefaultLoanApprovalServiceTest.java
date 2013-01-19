@@ -160,7 +160,7 @@ public class DefaultLoanApprovalServiceTest extends JbpmBpmn2TestCase {
     session.getWorkItemManager().registerWorkItemHandler(
         "Transfer Funds", transferFundsHandler);
     
-    fileLogger = new WorkingMemoryFileLogger(session);
+    //fileLogger = new WorkingMemoryFileLogger(session);
   }
 
   // @extract-start 07 15
