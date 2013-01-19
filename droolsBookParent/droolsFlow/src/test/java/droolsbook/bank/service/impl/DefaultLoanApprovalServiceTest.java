@@ -32,6 +32,7 @@ import org.drools.runtime.process.WorkItemHandler;
 import org.drools.runtime.process.WorkItemManager;
 import org.drools.runtime.process.WorkflowProcessInstance;
 import org.drools.task.MockUserInfo;
+import org.jbpm.bpmn2.JbpmBpmn2TestCase;
 import org.jbpm.process.instance.impl.demo.SystemOutWorkItemHandler;
 import org.jbpm.process.workitem.wsht.LocalHTWorkItemHandler;
 import org.jbpm.task.Status;
@@ -61,7 +62,7 @@ import droolsbook.droolsflow.model.Rating;
 import droolsbook.droolsflow.workitem.TransferWorkItemHandler;
 
 @RunWith(JMock.class)
-public class DefaultLoanApprovalServiceTest {
+public class DefaultLoanApprovalServiceTest extends JbpmBpmn2TestCase {
 
   private static final String PROCESS_RATING_CALCULATION = "ratingCalculation";
   private static final String PROCESS_LOAN_APPROVAL = "loanApproval";
@@ -75,19 +76,19 @@ public class DefaultLoanApprovalServiceTest {
   Mockery mockery;
   Account loanSourceAccount;
 
-  // @extract-start 07 03
   static final long NODE_FAULT_NOT_VALID = 21;
   static final long NODE_SPLIT_VALIDATED = 20;
-  // @extract-end
   final long NODE_SPLIT_AMOUNT_TO_BORROW = 4;
   // final long NODE_WORK_ITEM_EMAIL = 25;
   final long NODE_FAULT_LOW_RATING = 19;
+  // @extract-start 07 03
   final long NODE_SUBFLOW_RATING_CALCULATION = 7;
+  final long NODE_WORK_ITEM_TRANSFER = 26;
+  // @extract-end  
   final long NODE_SPLIT_RATING = 8;
   final long NODE_JOIN_RATING = 5;
   final long NODE_JOIN_PROCESS_LOAN = 23;
   final long NODE_GROUP_VALIDATE_LOAN = 14;
-  final long NODE_WORK_ITEM_TRANSFER = 26;
   final long NODE_HUMAN_TASK_PROCESS_LOAN = 12;
 
   final long NODE_GROUP_CALCULATE_RATING = 4;
@@ -103,8 +104,7 @@ public class DefaultLoanApprovalServiceTest {
   public static void setUpClass() throws Exception {
     KnowledgeBuilder builder = KnowledgeBuilderFactory.newKnowledgeBuilder();
     builder.add(ResourceFactory.newClassPathResource("loanApproval.drl"), ResourceType.DRL);
-    //TODO: builder.add(ResourceFactory.newClassPathResource("loanApproval.bpmn"), ResourceType.BPMN2); //problem with loan rating variable
-    builder.add(ResourceFactory.newClassPathResource("loanApproval.rf"), ResourceType.DRF);
+    builder.add(ResourceFactory.newClassPathResource("loanApproval.bpmn"), ResourceType.BPMN2);
     builder.add(ResourceFactory.newClassPathResource("ratingCalculation.drl"), ResourceType.DRL);
     builder.add(ResourceFactory.newClassPathResource("ratingCalculation.bpmn"), ResourceType.BPMN2);
     
@@ -123,8 +123,8 @@ public class DefaultLoanApprovalServiceTest {
 
   // @extract-start 07 01
   @Before
-  public void setUp() throws Exception {
-    session = knowledgeBase.newStatefulKnowledgeSession();
+  public void setUp() {
+    session = createKnowledgeSession(knowledgeBase);
     
     trackingProcessEventListener = 
       new TrackingProcessEventListener();
@@ -160,7 +160,7 @@ public class DefaultLoanApprovalServiceTest {
     session.getWorkItemManager().registerWorkItemHandler(
         "Transfer Funds", transferFundsHandler);
     
-    //fileLogger = new WorkingMemoryFileLogger(session);
+    fileLogger = new WorkingMemoryFileLogger(session);
   }
 
   // @extract-start 07 15
@@ -260,6 +260,7 @@ public class DefaultLoanApprovalServiceTest {
     startProcess();
     assertTrue(trackingProcessEventListener.isNodeTriggered(
         PROCESS_LOAN_APPROVAL, NODE_GROUP_VALIDATE_LOAN));
+    assertNodeTriggered(processInstance.getId(), "Validate Loan");
   }
 
   @Test
@@ -267,6 +268,7 @@ public class DefaultLoanApprovalServiceTest {
     startProcess();
     assertTrue(trackingProcessEventListener.isNodeTriggered(
         PROCESS_LOAN_APPROVAL, NODE_SPLIT_VALIDATED));
+    assertNodeTriggered(processInstance.getId(), "Validated?");
   }
 
   // @extract-start 07 02
@@ -275,18 +277,17 @@ public class DefaultLoanApprovalServiceTest {
     session.insert(new DefaultMessage());
     startProcess();
     
-    assertTrue(trackingProcessEventListener.isNodeTriggered(
-        PROCESS_LOAN_APPROVAL, NODE_FAULT_NOT_VALID));
-    assertEquals(ProcessInstance.STATE_ABORTED,
-        processInstance.getState());
+    assertNodeTriggered(processInstance.getId(), "Not Valid");
+    assertProcessInstanceAborted(processInstance.getId(),
+        session);
   }
   // @extract-end
 
   @Test
   public void amountToBorrow() {
     startProcess();
-    assertTrue(trackingProcessEventListener.isNodeTriggered(
-        PROCESS_LOAN_APPROVAL, NODE_SPLIT_AMOUNT_TO_BORROW));
+    assertNodeTriggered(processInstance.getId(),
+        "Amount to borrow?");
   }
 
   // @extract-start 07 07
@@ -295,8 +296,8 @@ public class DefaultLoanApprovalServiceTest {
     setUpLowAmount();
     startProcess();
     
-    assertTrue(trackingProcessEventListener.isNodeTriggered(
-        PROCESS_LOAN_APPROVAL, NODE_JOIN_RATING));
+    assertNodeTriggered(processInstance.getId(),
+        "Join Rating");
     assertFalse(trackingProcessEventListener
         .isNodeTriggered(PROCESS_LOAN_APPROVAL,
             NODE_SUBFLOW_RATING_CALCULATION));
@@ -308,18 +309,30 @@ public class DefaultLoanApprovalServiceTest {
   public void amountToBorrowHighRatingCalculation() {
     setUpHighAmount();
     startProcess();
-    assertTrue(trackingProcessEventListener
-        .isNodeTriggered(PROCESS_LOAN_APPROVAL,
-            NODE_SUBFLOW_RATING_CALCULATION));
+    assertNodeTriggered(processInstance.getId(),
+        "Rating Calculation");
     assertTrue(trackingProcessEventListener.isNodeTriggered(
         PROCESS_RATING_CALCULATION,
         NODE_GROUP_CALCULATE_RATING));
+    assertProcessVarExists(processInstance,
+        "customerLoanRating");
     WorkflowProcessInstance process = 
         (WorkflowProcessInstance) processInstance;
     assertEquals(1500, 
         process.getVariable("customerLoanRating"));
   }
   // @extract-end
+
+  //assertNodeTriggered(findProcessInstance("ratingCalculation").getId(),
+  //    "Calculate Rating");
+//  private ProcessInstance findProcessInstance(String processId) {
+//    for (ProcessInstance pi : session.getProcessInstances()) {
+//      if (processId.equals(pi.getProcessId())) {
+//        return pi;
+//      }
+//    }
+//    return null;
+//  }
 
   @Test
   public void ratingCalculation() {
@@ -363,10 +376,9 @@ public class DefaultLoanApprovalServiceTest {
     setUpHighRating();
     startProcess();    
     
-    assertTrue(trackingProcessEventListener.isNodeTriggered(
-        PROCESS_LOAN_APPROVAL, NODE_SPLIT_RATING));
-    assertTrue(trackingProcessEventListener.isNodeTriggered(
-        PROCESS_LOAN_APPROVAL, NODE_JOIN_RATING));
+    assertNodeTriggered(processInstance.getId(), "Rating?");
+    assertNodeTriggered(processInstance.getId(), 
+        "Join Rating");
   }
   // @extract-end
 
@@ -416,8 +428,8 @@ public class DefaultLoanApprovalServiceTest {
     localTaskService.start(task.getId(), "123");
     localTaskService.complete(task.getId(), "123", null);
     
-    assertTrue(trackingProcessEventListener.isNodeTriggered(
-        PROCESS_LOAN_APPROVAL, NODE_JOIN_PROCESS_LOAN));
+    assertNodeTriggered(processInstance.getId(), 
+        "Join Process");
   }
   // @extract-end
 
@@ -426,16 +438,16 @@ public class DefaultLoanApprovalServiceTest {
   public void approveEventJoin() {
     setUpLowAmount();
     startProcess();
-    assertEquals(ProcessInstance.STATE_ACTIVE, processInstance
-        .getState());
+    assertProcessInstanceActive(processInstance.getId(),
+        session);
     assertFalse(trackingProcessEventListener.isNodeTriggered(
         PROCESS_LOAN_APPROVAL, NODE_WORK_ITEM_TRANSFER));
     approveLoan();
     assertTrue(trackingProcessEventListener.isNodeTriggered(
         PROCESS_LOAN_APPROVAL, NODE_WORK_ITEM_TRANSFER));
 
-    assertEquals(ProcessInstance.STATE_COMPLETED,
-        processInstance.getState());
+    assertProcessInstanceCompleted(processInstance.getId(),
+        session);
   }
   // @extract-end
 
@@ -454,8 +466,8 @@ public class DefaultLoanApprovalServiceTest {
     startProcess();
     approveLoan();
 
-    assertTrue(trackingProcessEventListener.isNodeTriggered(
-        PROCESS_LOAN_APPROVAL, NODE_WORK_ITEM_TRANSFER));
+    assertNodeTriggered(processInstance.getId(), 
+        "Transfer Funds");
   }
   // @extract-end
 

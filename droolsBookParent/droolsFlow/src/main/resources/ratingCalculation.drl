@@ -1,15 +1,16 @@
-package droolsbook.droolsflow.loan
+package droolsbook.droolsflow.loan;
 
-import droolsbook.bank.model.*
-import droolsbook.droolsflow.model.*
+import droolsbook.bank.model.*;
+import droolsbook.droolsflow.model.*;
 
-import org.jbpm.process.instance.impl.ProcessInstanceImpl
-import org.jbpm.process.instance.context.variable.VariableScopeInstance
-import org.jbpm.process.core.context.variable.VariableScope
+import org.jbpm.process.instance.impl.ProcessInstanceImpl;
+import org.jbpm.process.instance.context.variable.VariableScopeInstance;
+import org.jbpm.process.core.context.variable.VariableScope;
 
-import org.drools.runtime.process.WorkflowProcessInstance
+//import org.drools.runtime.process.WorkflowProcessInstance;
+import org.jbpm.workflow.instance.WorkflowProcessInstance;
 
-
+/*
 rule ruleOnParentProcessInstance
 ruleflow-group "calculateRating"
 dialect "mvel" 
@@ -31,9 +32,10 @@ processInstance : WorkflowProcessInstance(
   then
     System.out.println("rule calculateRating");
 end
+*/
 
 
-
+/*
 rule ruleOnLoan
 ruleflow-group "calculateRating"
   when		
@@ -41,6 +43,7 @@ ruleflow-group "calculateRating"
   then
     System.out.println("!!!! calculateRating");
 end
+*/
 
 rule calculateRating
 ruleflow-group "calculateRating"
@@ -53,19 +56,17 @@ ruleflow-group "calculateRating"
 		insert(rating);
 end
 
-rule updateProcess
+rule updateSubProcess
 ruleflow-group "calculateRating"
 salience -100
 no-loop true
 	when
+		processInstance : WorkflowProcessInstance( 
+			processId == "ratingCalculation" )
 		$rating : Rating( )
-		$processInstance : WorkflowProcessInstance( )
 	then
-		modify($processInstance) {
-			setVariable("customerLoanRating", $rating.getRating());
+		modify(processInstance) {
+			setVariable("rating", $rating);
 		}
 end
-
-
-
 
