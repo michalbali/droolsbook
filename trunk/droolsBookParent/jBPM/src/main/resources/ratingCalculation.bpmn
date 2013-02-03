@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="UTF-8"?> 
+<definitions id="Definition"
+             targetNamespace="http://www.jboss.org/drools"
+             typeLanguage="http://www.java.com/javaTypes"
+             expressionLanguage="http://www.mvel.org/2.0"
+             xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL"
+             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+             xsi:schemaLocation="http://www.omg.org/spec/BPMN/20100524/MODEL BPMN20.xsd"
+             xmlns:g="http://www.jboss.org/drools/flow/gpd"
+             xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI"
+             xmlns:dc="http://www.omg.org/spec/DD/20100524/DC"
+             xmlns:di="http://www.omg.org/spec/DD/20100524/DI"
+             xmlns:tns="http://www.jboss.org/drools">
+
+  <process processType="Private" isExecutable="true" id="ratingCalculation" name="flow" tns:packageName="droolsbook.droolsflow.loan" >
+
+    <!-- nodes -->
+    <startEvent id="_1" name="Start" />
+    <businessRuleTask id="_2" name="Calculate Incomes" g:ruleFlowGroup="calculateIncomes" >
+    </businessRuleTask>
+    <businessRuleTask id="_3" name="Calculate Expenses" g:ruleFlowGroup="calculateExpenses" >
+    </businessRuleTask>
+    <businessRuleTask id="_4" name="Calculate Rating" g:ruleFlowGroup="calculateRating" >
+    </businessRuleTask>
+    <endEvent id="_5" name="End" >
+        <terminateEventDefinition />
+    </endEvent>
+    <parallelGateway id="_6" name="AND" gatewayDirection="Diverging" />
+    <parallelGateway id="_7" name="AND" gatewayDirection="Converging" />
+    <businessRuleTask id="_8" name="Calculate Monthly Repayments" g:ruleFlowGroup="calculateRepayments" >
+    </businessRuleTask>
+    <scriptTask id="_9" name="Initialize" >
+      <script>insert(context.processInstance);</script>
+    </scriptTask>
+
+    <!-- connections -->
+    <sequenceFlow id="_6-_2" sourceRef="_6" targetRef="_2" />
+    <sequenceFlow id="_8-_3" sourceRef="_8" targetRef="_3" />
+    <sequenceFlow id="_7-_4" sourceRef="_7" targetRef="_4" />
+    <sequenceFlow id="_4-_5" sourceRef="_4" targetRef="_5" />
+    <sequenceFlow id="_9-_6" sourceRef="_9" targetRef="_6" />
+    <sequenceFlow id="_2-_7" sourceRef="_2" targetRef="_7" />
+    <sequenceFlow id="_3-_7" sourceRef="_3" targetRef="_7" />
+    <sequenceFlow id="_6-_8" sourceRef="_6" targetRef="_8" />
+    <sequenceFlow id="_1-_9" sourceRef="_1" targetRef="_9" />
+
+  </process>
+
+  <bpmndi:BPMNDiagram>
+    <bpmndi:BPMNPlane bpmnElement="ratingCalculation" >
+      <bpmndi:BPMNShape bpmnElement="_1" >
+        <dc:Bounds x="164" y="17" width="48" height="48" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="_2" >
+        <dc:Bounds x="15" y="218" width="134" height="40" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="_3" >
+        <dc:Bounds x="231" y="254" width="148" height="40" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="_4" >
+        <dc:Bounds x="130" y="374" width="121" height="40" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="_5" >
+        <dc:Bounds x="169" y="431" width="48" height="48" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="_6" >
+        <dc:Bounds x="162" y="142" width="48" height="48" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="_7" >
+        <dc:Bounds x="166" y="303" width="48" height="48" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="_8" >
+        <dc:Bounds x="221" y="198" width="218" height="40" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="_9" >
+        <dc:Bounds x="143" y="76" width="87" height="48" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge bpmnElement="_6-_2" >
+        <di:waypoint x="186" y="166" />
+        <di:waypoint x="82" y="238" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="_8-_3" >
+        <di:waypoint x="330" y="218" />
+        <di:waypoint x="305" y="274" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="_7-_4" >
+        <di:waypoint x="190" y="327" />
+        <di:waypoint x="190" y="394" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="_4-_5" >
+        <di:waypoint x="190" y="394" />
+        <di:waypoint x="193" y="455" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="_9-_6" >
+        <di:waypoint x="186" y="100" />
+        <di:waypoint x="186" y="166" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="_2-_7" >
+        <di:waypoint x="82" y="238" />
+        <di:waypoint x="190" y="327" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="_3-_7" >
+        <di:waypoint x="305" y="274" />
+        <di:waypoint x="190" y="327" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="_6-_8" >
+        <di:waypoint x="186" y="166" />
+        <di:waypoint x="330" y="218" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="_1-_9" >
+        <di:waypoint x="188" y="41" />
+        <di:waypoint x="186" y="100" />
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+
+</definitions>
