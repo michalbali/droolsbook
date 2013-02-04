@@ -3,8 +3,7 @@ package droolsbook.sampleApplication.web;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.jbpm.task.service.TaskClient;
-import org.jbpm.task.service.responsehandlers.BlockingTaskOperationResponseHandler;
+import org.jbpm.task.TaskService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.AbstractController;
@@ -14,7 +13,7 @@ import droolsbook.bank.model.User;
 
 public class TaskClaimController extends AbstractController {
   @Autowired
-  private TaskClient client;
+  private TaskService client;
   @Autowired
   private WebSessionUtils webSessionUtils;
 
@@ -29,13 +28,7 @@ public class TaskClaimController extends AbstractController {
     long taskId = Long.parseLong(request
         .getParameter("taskId"));
     User user = webSessionUtils.getUser();
-    BlockingTaskOperationResponseHandler 
-      operationResponseHandler = 
-        new BlockingTaskOperationResponseHandler();
-    client.claim(taskId, user.getUserId(),
-        operationResponseHandler);
-    operationResponseHandler.waitTillDone(5000);
-
+    client.claim(taskId, user.getUserId());
     return new ModelAndView("redirect:taskList.htm");
   }
   // @extract-end

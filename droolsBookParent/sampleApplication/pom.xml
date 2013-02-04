@@ -20,7 +20,7 @@
     </dependency>
     <dependency>
       <groupId>droolsbook</groupId>
-      <artifactId>droolsFlow</artifactId>
+      <artifactId>jBPM</artifactId>
       <exclusions>
         <exclusion>
           <groupId>javax.el</groupId>
@@ -38,38 +38,52 @@
         </exclusion>
       </exclusions>
     </dependency>
-
-
+    
     <dependency>
       <groupId>commons-lang</groupId>
       <artifactId>commons-lang</artifactId>
     </dependency>
     <dependency>
       <groupId>org.drools</groupId>
+      <artifactId>drools-spring</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.drools</groupId>
       <artifactId>drools-persistence-jpa</artifactId>
-      <exclusions>
+      <!-- <exclusions>
         <exclusion>
           <groupId>javax.transaction</groupId>
           <artifactId>jta</artifactId>
         </exclusion>
-      </exclusions>
+      </exclusions> -->
     </dependency>
-    <!--<dependency>
-      <groupId>org.apache.mina</groupId>
-      <artifactId>mina-core</artifactId>
-    </dependency>
+               <dependency>
+                 <groupId>org.jbpm</groupId>
+                 <artifactId>jbpm-persistence-jpa</artifactId>
+               </dependency>
 
-    -->
     <dependency>
-      <groupId>org.slf4j</groupId>
-      <artifactId>slf4j-jdk14</artifactId>
+        <groupId>org.slf4j</groupId>
+        <artifactId>slf4j-log4j12</artifactId>
     </dependency>
     <dependency>
       <groupId>org.slf4j</groupId>
       <artifactId>slf4j-api</artifactId>
     </dependency>
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>jcl-over-slf4j</artifactId>
+    </dependency>
 
     <!-- Spring -->
+    <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-core</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-beans</artifactId>
+    </dependency>
     <dependency>
       <groupId>org.springframework</groupId>
       <artifactId>spring-orm</artifactId>
@@ -104,12 +118,12 @@
     <dependency>
       <groupId>org.hibernate</groupId>
       <artifactId>hibernate-entitymanager</artifactId>
-      <exclusions>
+<!--       <exclusions>
         <exclusion>
           <groupId>javax.transaction</groupId>
           <artifactId>jta</artifactId>
         </exclusion>
-      </exclusions>
+      </exclusions> -->
     </dependency>
     <dependency>
       <groupId>org.hibernate</groupId>
@@ -122,19 +136,12 @@
     <dependency>
       <groupId>org.hibernate</groupId>
       <artifactId>hibernate-core</artifactId>
-      <exclusions>
+      <!-- <exclusions>
         <exclusion>
           <groupId>javax.transaction</groupId>
           <artifactId>jta</artifactId>
         </exclusion>
-      </exclusions>
-    </dependency>
-
-    <!-- Transaction manager -->
-    <dependency>
-      <groupId>org.codehaus.btm</groupId>
-      <artifactId>btm</artifactId>
-      <scope>provided</scope>
+      </exclusions> -->
     </dependency>
 
     <!-- HSQLDB -->
@@ -176,6 +183,7 @@
         <artifactId>maven-eclipse-plugin</artifactId>
         <version>2.8</version>
         <configuration>
+          <useProjectReferences>false</useProjectReferences>
           <downloadSources>true</downloadSources>
           <!-- <projectNameTemplate>[artifactId]-[version]</projectNameTemplate>  -->
           <wtpmanifest>true</wtpmanifest>

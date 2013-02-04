@@ -16,7 +16,7 @@
         <include>droolsbook:ruleflow</include>
         <include>droolsbook:stateful</include>
         <include>droolsbook:cep</include>
-        <include>droolsbook:droolsFlow</include>
+        <include>droolsbook:jBPM</include>
         <include>droolsbook:sampleApplication</include>
         <include>droolsbook:testing</include>
         <include>droolsbook:integration</include>

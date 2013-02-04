@@ -11,12 +11,13 @@
 
   <path id="drools.classpath">
     <pathelement location="${droolsPath}/drools-ant.jar" />
-    <pathelement location="${droolsPath}/drools-api.jar" />
+    <pathelement location="${droolsPath}/knowledge-api.jar" />
     <pathelement location="${droolsPath}/drools-core.jar" />
     <pathelement location="${droolsPath}/drools-compiler.jar" />
     <pathelement location="${droolsPath}/antlr-runtime.jar" />
     <pathelement location="${droolsPath}/mvel2.jar" />
     <pathelement location="${droolsPath}/core.jar" />
+  	<pathelement location="${droolsPath}/slf4j-api.jar" />
     <!-- put all required drools libraries here -->
   </path>
 
