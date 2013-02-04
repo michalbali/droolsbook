@@ -14,12 +14,11 @@
    <mapping-file>META-INF/Taskorm.xml</mapping-file>
    <mapping-file>META-INF/JBPMorm.xml</mapping-file>
    
-   <!-- TODO enable me -->
-   <!-- <mapping-file>META-INF/ProcessInstanceInfo-mapping.hbm.xml</mapping-file> -->
    <class>org.drools.persistence.info.SessionInfo</class>
-   <!-- <class>org.jbpm.persistence.processinstance.ProcessInstanceInfo</class> this class is mapped via the mapping file-->
-   <!--<class>org.jbpm.persistence.processinstance.ProcessInstanceEventInfo</class>
-   --><class>org.drools.persistence.info.WorkItemInfo</class>
+   <!-- <class>org.jbpm.persistence.processinstance.ProcessInstanceInfo</class> this class is mapped via a mapping file-->
+   <!-- <mapping-file>META-INF/ProcessInstanceInfo-mapping.hbm.xml</mapping-file> this mapping file is loaded automatically -->
+   <class>org.jbpm.persistence.processinstance.ProcessInstanceEventInfo</class>
+   <class>org.drools.persistence.info.WorkItemInfo</class>
    
    <class>droolsbook.bank.model.Customer</class>
    <class>droolsbook.bank.model.Address</class>
