@@ -82,13 +82,10 @@
     class="droolsbook.sampleApplication.web.ListPendingTasksController">
   </bean>
 
-  <bean name="server" class="droolsbook.sampleApplication.server.HumanTaskServer" destroy-method="destroy" init-method="init" />
+
+  <bean class="droolsbook.sampleApplication.server.DBInitializer" init-method="init">
+    <property name="taskService" ref="taskService" />
+  </bean>
   <bean class="droolsbook.sampleApplication.server.H2DBServer" destroy-method="destroy" init-method="init" />
   
-
-  <bean name="minaTaskClient"
-    class="droolsbook.sampleApplication.server.MinaTaskClientFactory"
-    factory-method="create" depends-on="server" />
-
-
 </beans>

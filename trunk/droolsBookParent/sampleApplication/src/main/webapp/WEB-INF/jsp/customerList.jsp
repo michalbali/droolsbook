@@ -10,7 +10,7 @@
       <c:out value="${customer.firstName}"/> <c:out value="${customer.lastName}"/><br><br>
     </c:forEach>
     <br>
-    <!-- the following two lines doesn't make sence on teh same page, this is secuirty driven, this page is just a mock -->
+    <!-- the following two lines doesn't make sense on the same page, this is security driven, this page is just a mock -->
     <a href="<c:url value="customerSave.htm"/>">Add Customer</a><br />
     <a href="<c:url value="loanRequest.htm"/>">Loan Request</a><br />
     <a href="<c:url value="taskList.htm"/>">Task List</a><br /><br />

@@ -8,12 +8,16 @@
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
   xmlns="http://java.sun.com/xml/ns/persistence">
   <persistence-unit name="droolsbook.persistence"
-     transaction-type="JTA">
+     transaction-type="RESOURCE_LOCAL">
    <provider>org.hibernate.ejb.HibernatePersistence</provider>
-   <jta-data-source>jdbc/testDS1</jta-data-source>
+   <!--<jta-data-source>jdbc/testDS1</jta-data-source>-->
+   <mapping-file>META-INF/Taskorm.xml</mapping-file>
+   <mapping-file>META-INF/JBPMorm.xml</mapping-file>
    
+   <!-- TODO enable me -->
+   <!-- <mapping-file>META-INF/ProcessInstanceInfo-mapping.hbm.xml</mapping-file> -->
    <class>org.drools.persistence.info.SessionInfo</class>
-   <class>org.jbpm.persistence.processinstance.ProcessInstanceInfo</class>
+   <!-- <class>org.jbpm.persistence.processinstance.ProcessInstanceInfo</class> this class is mapped via the mapping file-->
    <!--<class>org.jbpm.persistence.processinstance.ProcessInstanceEventInfo</class>
    --><class>org.drools.persistence.info.WorkItemInfo</class>
    
@@ -22,7 +26,7 @@
    <class>droolsbook.bank.model.Account</class>
    <class>droolsbook.bank.model.LoanApprovalHolder</class>
    
-   <!--<class>org.jbpm.task.Attachment</class>
+    <class>org.jbpm.task.Attachment</class>
     <class>org.jbpm.task.Content</class>
     <class>org.jbpm.task.BooleanExpression</class>
     <class>org.jbpm.task.Comment</class>
@@ -45,5 +49,5 @@
     <class>org.jbpm.task.OnParentAbortAllSubTasksEndStrategy</class>
     <class>org.jbpm.task.OnAllSubTasksEndParentEndStrategy</class>
     <class>org.jbpm.task.User</class>
-  --></persistence-unit>  
+  </persistence-unit>  
 </persistence>

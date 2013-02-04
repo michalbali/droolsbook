@@ -27,7 +27,7 @@ public class ListPendingTasksController extends
   @Autowired
   private BankingService bankingService;
 
-  @PersistenceContext(unitName="entityManagerFactory")
+  @PersistenceContext
   EntityManager em;
 
   @Override

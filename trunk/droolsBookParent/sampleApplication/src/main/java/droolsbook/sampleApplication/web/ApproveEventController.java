@@ -20,7 +20,7 @@ public class ApproveEventController extends AbstractController {
   /**
    * sends 'loan approved' event to specific process
    */
-  @PersistenceContext(unitName="entityManagerFactory")
+  @PersistenceContext
   EntityManager em;
   
   @Override

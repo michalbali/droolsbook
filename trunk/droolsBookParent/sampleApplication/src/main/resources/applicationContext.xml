@@ -3,37 +3,39 @@
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xmlns:aop="http://www.springframework.org/schema/aop"
   xmlns:tx="http://www.springframework.org/schema/tx"
+  xmlns:drools="http://drools.org/schema/drools-spring"
   xsi:schemaLocation="
        http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
        http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-2.5.xsd
-       http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-2.5.xsd">
+       http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-2.5.xsd
+       http://drools.org/schema/drools-spring http://drools.org/schema/drools-spring.xsd">
 
-<bean id="transactionManager"
-  class="org.springframework.transaction.jta.JtaTransactionManager" />
-    
+  <bean id="transactionManager" class="org.springframework.orm.jpa.JpaTransactionManager">
+    <property name="entityManagerFactory" ref="entityManagerFactory" />
+  </bean>
+
+  <!-- If you need a "real" connection pool outside of a J2EE container, consider Apache's Jakarta Commons DBCP or C3P0. -->
+  <bean id="dataSource" class="org.springframework.jdbc.datasource.DriverManagerDataSource">
+    <property name="driverClassName" value="org.h2.Driver" />
+    <property name="url" value="jdbc:h2:~/droolsBookDatabaseH2" />
+    <!--  <property name="url" value="jdbc:h2:mem:mydb" /> -->
+    <property name="username" value="sa" />
+    <property name="password" value="sasa" />
+  </bean>
+
        
 <aop:config>
   <aop:pointcut id="bankingServiceMethods"
     expression="execution(*
-  droolsbook.bank.service.BankingService.*(..))" />
-
-  <aop:pointcut id="knowledgeSessionLookupMethods"
-    expression="execution(* droolsbook.org.drools.persistence.KnowledgeSessionLookup.*(..))" />
+    droolsbook.bank.service.BankingService.*(..))" />
+  <aop:pointcut id="taskServiceMethods"
+    expression="execution(* 
+    org.jbpm.task.TaskService.*(..))" />  
     
-    <!--
-  <aop:pointcut id="humanTaskServerMethods"
-    expression="execution(* droolsbook.sampleApplication.server.HumanTaskServer.*(..))" />
-  <aop:advisor advice-ref="transactionAdvice"
-    pointcut-ref="humanTaskServerMethods" />
-  -->
-  
   <aop:advisor advice-ref="transactionAdvice"
     pointcut-ref="bankingServiceMethods" />
-
-  <!--<aop:advisor pointcut-ref="knowledgeSessionLookupMethods"
-    advice-ref="noTransactionAdvice" />
-  -->
-
+  <aop:advisor advice-ref="transactionAdvice"
+    pointcut-ref="taskServiceMethods" />  
 </aop:config>
 
 <tx:advice id="transactionAdvice" 
@@ -43,16 +45,10 @@
   </tx:attributes>
 </tx:advice>
 
-<!--<tx:advice id="noTransactionAdvice">
-  <tx:attributes>
-    <tx:method name="*" propagation="NOT_SUPPORTED"/>
-  </tx:attributes>
-</tx:advice>
-  
-  
  
---><bean id="entityManagerFactory"
+<bean id="entityManagerFactory"
   class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean">
+  <property name="dataSource" ref="dataSource" />
   <property name="persistenceUnitName"
     value="droolsbook.persistence" />
   <property name="jpaPropertyMap" ref="jpaPropertyMap" />
@@ -67,8 +63,7 @@
       <entry key="hibernate.format_sql" value="true" />
       <entry key="hibernate.use_sql_comments" value="true"/>
       <entry key="hibernate.hbm2ddl.auto" 
-        value="create-drop" />     
-      <entry key="hibernate.transaction.manager_lookup_class" value="org.hibernate.transaction.BTMTransactionManagerLookup" />     
+        value="create-drop" />
     </map>
   </property>
 </bean>
@@ -78,25 +73,46 @@
   <property name="knowledgeBase" 
     ref="loanApprovalKnowledge" />
   <property name="emailHandler" ref="emailWorkItemHandler"/>
-  <!--<property name="humanTaskHandler" 
-    ref="approveLoanWorkItemHandler"/>
-  --><property name="transferFundsHandler" 
+  <property name="transferFundsHandler" 
     ref="transferFundsWorkItemHandler"/>
+  <property name="transactionManager" ref="transactionManager" />
+  <property name="taskService" ref="localTaskService" />
 </bean>
 
   <bean name="emailWorkItemHandler" class="org.jbpm.process.instance.impl.demo.SystemOutWorkItemHandler" />
   <bean name="transferFundsWorkItemHandler" class="org.jbpm.process.instance.impl.demo.SystemOutWorkItemHandler" />
-  <!--<bean name="approveLoanWorkItemHandler" class="org.jbpm.process.workitem.wsht.WSHumanTaskHandler" >
-    <property name="transactionTemplate" 
-      ref="transactionTemplate" />
-    <property name="knowledgeSessionLookup" 
-      ref="knowledgeSessionLookup" />
+
+
+
+
+  <bean id="localTaskService" class="org.jbpm.task.service.local.LocalTaskService" depends-on="springTaskSessionFactory" >
+    <constructor-arg ref="taskService" />
+  </bean>
+
+  <bean id="taskService" class="org.jbpm.task.service.TaskService" >
+    <property name="systemEventListener" >
+      <bean class="org.drools.SystemEventListenerFactory" factory-method="getSystemEventListener" />
+    </property>
+  </bean>
+
+  <bean id="springTaskSessionFactory" class="org.jbpm.task.service.persistence.TaskSessionSpringFactoryImpl"
+        init-method="initialize" depends-on="taskService" >
+    <!-- if using the SharedEntityManagerBean, make sure to enable nested transactions -->
+    <property name="entityManager" >
+      <bean class="org.springframework.orm.jpa.support.SharedEntityManagerBean">
+        <property name="entityManagerFactory" ref="entityManagerFactory"/>
+      </bean>
+    </property>
+    <property name="transactionManager" >
+      <bean class="org.drools.container.spring.beans.persistence.HumanTaskSpringTransactionManager">
+        <constructor-arg ref="transactionManager" />
+      </bean>
+    </property>
+    <property name="useJTA" value="false" />
+    <property name="taskService" ref="taskService" />
   </bean> 
   
---><bean id="transactionTemplate" class="org.springframework.transaction.support.TransactionTemplate">
-    <property name="transactionManager" 
-      ref="transactionManager" />
-</bean>
+
 
 
 <bean name="bankingFactory" 
@@ -109,32 +125,20 @@
   class="droolsbook.sampleApplication.repository.jpa.JPACustomerRepository" />
 
 
-<bean name="validationKnowledge"
-  class="droolsbook.integration.spring.KnowledgeBaseFactoryBean">
-  <description>validation knowledge base factory bean
-  </description>
-  <constructor-arg>
-    <map>
-      <entry key="classpath:validation.drl" value="DRL" />
-    </map>
-  </constructor-arg>
-</bean>
-  
-  
-<bean name="loanApprovalKnowledge" class="droolsbook.integration.spring.KnowledgeBaseFactoryBean">
-  <description>loan approval knowledge base factory bean
-  </description>
-  <constructor-arg>
-    <map>
-      <entry key="classpath:loanApproval.drl" value="DRL" />
-      <entry key="classpath:loanApproval.rf" value="DRF" />
-      <entry key="classpath:ratingCalculation.drl" 
-        value="DRL" />
-      <entry key="classpath:ratingCalculation.rf" 
-        value="DRF" />
-    </map>
-  </constructor-arg>
-</bean>
+  <drools:kbase id="validationKnowledge">
+      <drools:resources>
+      <drools:resource type="DRL" source="classpath:validation.drl" />
+    </drools:resources>
+  </drools:kbase>
+
+  <drools:kbase id="loanApprovalKnowledge">
+      <drools:resources>
+      <drools:resource type="DRL" source="classpath:loanApproval.drl" />
+      <drools:resource type="BPMN2" source="classpath:loanApproval.bpmn" />
+      <drools:resource type="DRL" source="classpath:ratingCalculation.drl" />
+      <drools:resource type="BPMN2" source="classpath:ratingCalculation.bpmn" />
+    </drools:resources>
+  </drools:kbase>
 
 
 <bean name="validationService"
@@ -146,9 +150,7 @@
 <bean name="loanApprovalService"
  class="droolsbook.bank.service.impl.LoanApprovalServiceImpl">
  <property name="sessionLookup" ref="knowledgeSessionLookup"/>
- <!--<property name="approveLoanHandler" 
-    ref="approveLoanWorkItemHandler" />
---></bean>
+</bean>
   
   <bean name="cepService" class="droolsbook.bank.service.impl.CEPServiceImpl">
     
