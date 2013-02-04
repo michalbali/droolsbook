@@ -33,13 +33,11 @@ public class CustomLocalHTWorkItemHandler extends LocalHTWorkItemHandler {
   
   public CustomLocalHTWorkItemHandler(KnowledgeRuntime session) {
     super(session);
-    // TODO Auto-generated constructor stub
   }
 
   public CustomLocalHTWorkItemHandler(KnowledgeRuntime session,
       boolean owningSessionOnly) {
     super(session, owningSessionOnly);
-    // TODO Auto-generated constructor stub
   }
 
   public CustomLocalHTWorkItemHandler(TaskService client,
@@ -51,31 +49,28 @@ public class CustomLocalHTWorkItemHandler extends LocalHTWorkItemHandler {
   public CustomLocalHTWorkItemHandler(KnowledgeRuntime session,
       OnErrorAction action) {
     super(session, action);
-    // TODO Auto-generated constructor stub
   }
 
   public CustomLocalHTWorkItemHandler(TaskService client,
       KnowledgeRuntime session, boolean owningSessionOnly) {
     super(client, session, owningSessionOnly);
-    // TODO Auto-generated constructor stub
   }
 
   public CustomLocalHTWorkItemHandler(TaskService client,
       KnowledgeRuntime session, OnErrorAction action) {
     super(client, session, action);
-    // TODO Auto-generated constructor stub
   }
 
   public CustomLocalHTWorkItemHandler(TaskService client,
       KnowledgeRuntime session, OnErrorAction action, ClassLoader classLoader) {
     super(client, session, action, classLoader);
-    // TODO Auto-generated constructor stub
   }
   
   
   protected void registerTaskEvents() {
     //super.registerTaskEvents();
 
+    //we'll register our own task completed handler
     CustomTaskCompletedHandler eventResponseHandler = new CustomTaskCompletedHandler();
     TaskEventKey key = new TaskEventKey(TaskCompletedEvent.class, -1);
     getClient().registerForEvent(key, false, eventResponseHandler);
@@ -88,30 +83,29 @@ public class CustomLocalHTWorkItemHandler extends LocalHTWorkItemHandler {
     eventHandlers.put(key, eventResponseHandler);
   }
    
-  
   private class CustomTaskCompletedHandler extends AbstractBaseResponseHandler implements EventResponseHandler {
 
     public void execute(Payload payload) {
         TaskEvent event = (TaskEvent) payload.get();
         final long taskId = event.getTaskId();
         
-//        if (owningSessionOnly && (session instanceof StatefulKnowledgeSession)) {
-//            if (((StatefulKnowledgeSession) session).getId() != event.getSessionId()) {
-//                return;
-//            }
-//        }
+        if (isOwningSessionOnly() && (session instanceof StatefulKnowledgeSession)) {
+            if (((StatefulKnowledgeSession) session).getId() != event.getSessionId()) {
+                return;
+            }
+        }
         
-        //if (local) {
+        if (isLocal()) {
             handleCompletedTask(taskId);
-//        } else {
-//            Runnable runnable = new Runnable() {
-//
-//                public void run() {
-//                    handleCompletedTask(taskId);
-//                }
-//            };
-//            new Thread(runnable).start();
-//        }
+        } else {
+            Runnable runnable = new Runnable() {
+
+                public void run() {
+                    handleCompletedTask(taskId);
+                }
+            };
+            new Thread(runnable).start();
+        }
     }
 
     public boolean isRemove() {
@@ -119,67 +113,82 @@ public class CustomLocalHTWorkItemHandler extends LocalHTWorkItemHandler {
     }
 
     public void handleCompletedTask(long taskId) {
-        final Task task = getClient().getTask(taskId);
-        final long workItemId = task.getTaskData().getWorkItemId();
-        if (task.getTaskData().getStatus() == Status.Completed) {
-            String userId = task.getTaskData().getActualOwner().getId();
-            final Map<String, Object> results = new HashMap<String, Object>();
-            results.put("ActorId", userId);
-            long contentId = task.getTaskData().getOutputContentId();
-            if (contentId != -1) {
-                Content content = getClient().getContent(contentId);
-                Object result = ContentMarshallerHelper.unmarshall( content.getContent(), session.getEnvironment(), getClassLoader());
-                results.put("Result", result);
-                if (result instanceof Map) {
-                    Map<?, ?> map = (Map<?, ?>) result;
-                    for (Map.Entry<?, ?> entry : map.entrySet()) {
-                        if (entry.getKey() instanceof String) {
-                            results.put((String) entry.getKey(), entry.getValue());
-                        }
-                    }
-                }
-
-                
-//                transactionTemplate.execute(
-//                    new TransactionCallbackWithoutResult() {
-//                      
-//                      @Override
-//                      protected void doInTransactionWithoutResult(TransactionStatus status) {
-//                        
-//                        
-//                        StatefulKnowledgeSession session = knowledgeSessionLookup.loadSession(task.getTaskData().getProcessSessionId());
-//                        try {
-//                          session.getWorkItemManager().completeWorkItem(
-//                              workItemId, results );
-//                        } finally {
-//                          TransactionSynchronizationManager.registerSynchronization(new SessionCleanupTransactionSynchronisation(session, "handleCompletedTask1"));
-//                        }
-//                        
-//                        
-//                      }
-//                    });
-                
-                session.getWorkItemManager().completeWorkItem(task.getTaskData().getWorkItemId(), results);
-            } else {
-              
-                      StatefulKnowledgeSession session = knowledgeSessionLookup.loadSession(task.getTaskData().getProcessSessionId());
-                      try {
-                        session.getWorkItemManager().completeWorkItem(
-                            workItemId, results );
-                      } finally {
-                        TransactionSynchronizationManager.registerSynchronization(new SessionCleanupTransactionSynchronisation(session, "handleCompletedTask2"));
-                        try {
-                          dispose();
-                        } catch (Exception e) {
-                          e.printStackTrace();
-                        }
-                      }
-                      
+      Task task = getClient().getTask(taskId);
+      long workItemId = task.getTaskData().getWorkItemId();
+      if (task.getTaskData().getStatus() == Status.Completed) {
+        String userId = task.getTaskData().getActualOwner()
+            .getId();
+        Map<String, Object> results = new HashMap<String, Object>();
+        results.put("ActorId", userId);
+        long contentId = task.getTaskData()
+            .getOutputContentId();
+        if (contentId != -1) {
+          Content content = getClient().getContent(contentId);
+          Object result = ContentMarshallerHelper.unmarshall(
+              content.getContent(), session.getEnvironment(),
+              getClassLoader());
+          results.put("Result", result);
+          if (result instanceof Map) {
+            Map<?, ?> map = (Map<?, ?>) result;
+            for (Map.Entry<?, ?> entry : map.entrySet()) {
+              if (entry.getKey() instanceof String) {
+                results.put((String) entry.getKey(),
+                    entry.getValue());
+              }
             }
+          }
+
+          // session.getWorkItemManager().completeWorkItem(task.getTaskData().getWorkItemId(),
+          // results);
+          doCompleteWorkItem(task, task.getTaskData()
+              .getWorkItemId(), results);
         } else {
-          session.getWorkItemManager().abortWorkItem(workItemId);
+          // session.getWorkItemManager().completeWorkItem(workItemId, results);
+          doCompleteWorkItem(task, workItemId, results);
         }
+      } else {
+        // session.getWorkItemManager().abortWorkItem(workItemId);
+        doAbortWorkItem(task, workItemId);
+      }
     }
-}
+
+    private void doCompleteWorkItem(Task task,
+        long workItemId, Map<String, Object> results) {
+      StatefulKnowledgeSession session = knowledgeSessionLookup
+          .loadSession(task.getTaskData()
+              .getProcessSessionId());
+      try {
+        session.getWorkItemManager().completeWorkItem(
+            workItemId, results);
+      } finally {
+        TransactionSynchronizationManager
+            .registerSynchronization(new SessionCleanupTransactionSynchronisation(
+                session, "CustomTaskCompletedHandler.complete"));
+        try {
+          dispose();
+        } catch (Exception e) {
+          e.printStackTrace();
+        }
+      }
+    }
+
+    private void doAbortWorkItem(Task task, long workItemId) {
+      StatefulKnowledgeSession session = knowledgeSessionLookup
+          .loadSession(task.getTaskData()
+              .getProcessSessionId());
+      try {
+        session.getWorkItemManager().abortWorkItem(workItemId);
+      } finally {
+        TransactionSynchronizationManager
+            .registerSynchronization(new SessionCleanupTransactionSynchronisation(
+                session, "CustomTaskCompletedHandler.abort"));
+        try {
+          dispose();
+        } catch (Exception e) {
+          e.printStackTrace();
+        }
+      }
+    }
+  }
 
 }
