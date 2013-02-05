@@ -382,6 +382,10 @@
           <artifactId>maven-release-plugin</artifactId>
           <version>2.1</version>
         </plugin>
+        <plugin>
+          <artifactId>maven-dependency-plugin</artifactId>
+          <version>2.6</version>
+        </plugin>
       </plugins>
     </pluginManagement>
     <plugins>
@@ -472,6 +476,10 @@
     <!--  https://github.com/droolsjbpm/droolsjbpm-build-bootstrap/blob/5.4.0.Final/pom.xml  -->
     <drools.ver>5.5.0.Final</drools.ver>
     <jbpm.version>5.4.0.Final</jbpm.version>
+    
+    <!-- Make build platform independent -->
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
   </properties>
   <prerequisites>
     <maven>3.0.1</maven>
