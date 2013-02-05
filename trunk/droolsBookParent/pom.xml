@@ -347,6 +347,19 @@
       </dependency>     
       
       
+      <!-- this is to make sure that the maven enforcer plugin is happy, because there are two versions being pulled, one from drools one from hibernate (latest) -->
+      <dependency>
+         <groupId>org.javassist</groupId>
+         <artifactId>javassist</artifactId>
+         <version>3.17.1-GA</version>
+      </dependency>
+      <!-- this is to make sure that the maven enforcer plugin is happy, because there are two versions being pulled -->
+      <dependency>
+        <groupId>org.apache.commons</groupId>
+        <artifactId>commons-compress</artifactId>
+        <version>1.1</version>
+      </dependency>
+      
       
     </dependencies>
   </dependencyManagement>
@@ -397,7 +410,6 @@
           </descriptors>
         </configuration>
       </plugin>
-      <!-- TODO: enable me for book2 
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-enforcer-plugin</artifactId>
@@ -416,7 +428,6 @@
           </execution>
         </executions>
       </plugin>
-      -->
     </plugins>
   </build>
   <repositories>
