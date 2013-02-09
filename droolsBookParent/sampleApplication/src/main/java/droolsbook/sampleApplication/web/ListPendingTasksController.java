@@ -1,26 +1,22 @@
 package droolsbook.sampleApplication.web;
 
-import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.servlet.ModelAndView;
-import org.springframework.web.servlet.mvc.AbstractController;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.RequestMapping;
 
 import droolsbook.bank.model.LoanApprovalHolder;
 import droolsbook.bank.service.BankingService;
-import droolsbook.bank.service.impl.BankingServiceImpl;
 
-public class ListPendingTasksController extends
-    AbstractController {
+@Controller
+public class ListPendingTasksController {
 
   protected final Logger logger = LoggerFactory.getLogger(getClass());
 
@@ -30,10 +26,8 @@ public class ListPendingTasksController extends
   @PersistenceContext
   EntityManager em;
 
-  @Override
-  protected ModelAndView handleRequestInternal(
-      HttpServletRequest request, HttpServletResponse response)
-      throws Exception {
+  @RequestMapping("/listPendingTasks.htm")
+  public String listPendingTasks(Model model) {
     // in reality this should lists all tasks that were completed but not yet
     // approved
     // ones that are rejected are not displayed ...
@@ -47,7 +41,7 @@ public class ListPendingTasksController extends
           + holder.getCustomer());
     }
 
-    return new ModelAndView("redirect:customerList.htm");
+    return "redirect:customerList.htm";
   }
 
 }

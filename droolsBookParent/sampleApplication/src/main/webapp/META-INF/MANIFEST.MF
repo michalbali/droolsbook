@@ -4,7 +4,7 @@ Class-Path: activation-1.1.jar ant-1.8.2.jar ant-launcher-1.8.2.jar an
   asm-3.1.jar aspectjrt-1.7.1.jar aspectjweaver-1.7.1.jar bankingcore-
  1.1-SNAPSHOT.jar bcmail-jdk14-138.jar bcprov-jdk14-138.jar boilerpipe
  -1.1.0.jar commons-codec-1.2.jar commons-collections-3.2.1.jar common
- s-compress-1.0.jar commons-dbcp-1.2.2.jar commons-exec-1.0.1.jar comm
+ s-compress-1.1.jar commons-dbcp-1.2.2.jar commons-exec-1.0.1.jar comm
  ons-httpclient-3.1.jar commons-io-1.4.jar commons-lang-2.6.jar common
  s-net-2.0.jar commons-pool-1.3.jar concurrent-1.3.4.jar cxf-api-2.4.4
  .jar cxf-common-utilities-2.4.4.jar cxf-rt-bindings-soap-2.4.4.jar cx
@@ -24,7 +24,7 @@ Class-Path: activation-1.1.jar ant-1.8.2.jar ant-launcher-1.8.2.jar an
  0-api-1.0.1.Final.jar integration-1.1-SNAPSHOT.jar itext-2.1.2.jar ja
  ckrabbit-api-2.2.8.jar jackrabbit-core-2.2.8.jar jackrabbit-jcr-commo
  ns-2.2.8.jar jackrabbit-spi-2.2.8.jar jackrabbit-spi-commons-2.2.8.ja
- r javassist-3.14.0-GA.jar jaxb-impl-2.1.13.jar jaxb-xjc-2.1.13.jar jb
+ r javassist-3.17.1-GA.jar jaxb-impl-2.1.13.jar jaxb-xjc-2.1.13.jar jb
  oss-logging-3.1.0.GA.jar jboss-transaction-api_1.1_spec-1.0.0.Final.j
  ar jBPM-1.1-SNAPSHOT.jar jbpm-bpmn2-5.4.0.Final.jar jbpm-flow-5.4.0.F
  inal.jar jbpm-flow-builder-5.4.0.Final.jar jbpm-human-task-core-5.4.0
@@ -35,16 +35,14 @@ Class-Path: activation-1.1.jar ant-1.8.2.jar ant-launcher-1.8.2.jar an
  ene-core-2.4.1.jar mail-1.4.jar metadata-extractor-2.4.0-beta-1.jar m
  vel2-2.1.3.Final.jar neethi-3.0.2.jar netcdf-4.2-min.jar poi-3.7.jar 
  poi-ooxml-3.7.jar poi-ooxml-schemas-3.7.jar poi-scratchpad-3.7.jar pr
- otobuf-java-2.4.1.jar rome-1.0.jar servlet-api-2.5.jar slf4j-api-1.6.
- 4.jar slf4j-log4j12-1.6.4.jar smack-3.1.0.jar spring-aop-3.0.6.RELEAS
- E.jar spring-asm-3.0.6.RELEASE.jar spring-beans-3.0.6.RELEASE.jar spr
- ing-context-3.0.6.RELEASE.jar spring-context-support-3.0.6.RELEASE.ja
- r spring-core-3.0.6.RELEASE.jar spring-expression-3.0.6.RELEASE.jar s
- pring-jdbc-3.0.6.RELEASE.jar spring-orm-3.0.6.RELEASE.jar spring-tx-3
- .0.6.RELEASE.jar spring-web-3.0.6.RELEASE.jar spring-webmvc-3.0.6.REL
- EASE.jar standard-1.1.2.jar stax2-api-3.1.1.jar stringtemplate-3.2.1.
- jar tagsoup-1.2.jar tika-core-0.8.jar tika-parsers-0.8.jar validation
- -1.1-SNAPSHOT.jar woodstox-core-asl-4.1.1.jar wsdl4j-1.6.2.jar xml-ap
- is-1.0.b2.jar xml-resolver-1.2.jar xmlbeans-2.3.0.jar xmlschema-core-
- 2.0.2.jar
+ otobuf-java-2.4.1.jar rome-1.0.jar slf4j-api-1.6.4.jar slf4j-log4j12-
+ 1.6.4.jar smack-3.1.0.jar spring-aop-3.2.1.RELEASE.jar spring-beans-3
+ .2.1.RELEASE.jar spring-context-3.2.1.RELEASE.jar spring-core-3.2.1.R
+ ELEASE.jar spring-expression-3.2.1.RELEASE.jar spring-jdbc-3.2.1.RELE
+ ASE.jar spring-orm-3.2.1.RELEASE.jar spring-tx-3.2.1.RELEASE.jar spri
+ ng-web-3.2.1.RELEASE.jar spring-webmvc-3.2.1.RELEASE.jar standard-1.1
+ .2.jar stax2-api-3.1.1.jar stringtemplate-3.2.1.jar tagsoup-1.2.jar t
+ ika-core-0.8.jar tika-parsers-0.8.jar validation-1.1-SNAPSHOT.jar woo
+ dstox-core-asl-4.1.1.jar wsdl4j-1.6.2.jar xml-apis-1.0.b2.jar xml-res
+ olver-1.2.jar xmlbeans-2.3.0.jar xmlschema-core-2.0.2.jar
 

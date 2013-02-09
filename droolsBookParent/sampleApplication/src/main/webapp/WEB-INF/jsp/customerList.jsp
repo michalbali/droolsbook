@@ -4,9 +4,9 @@
   <head><title><fmt:message key="title"/></title></head>
   <body>
     <h1><fmt:message key="heading"/></h1>
-    <p><fmt:message key="greeting"/> <c:out value="${model.now}"/></p>
+    <p><fmt:message key="greeting"/> <c:out value="${now}"/></p>
     <h3>Customers</h3>
-    <c:forEach items="${model.customers}" var="customer">
+    <c:forEach items="${customers}" var="customer">
       <c:out value="${customer.firstName}"/> <c:out value="${customer.lastName}"/><br><br>
     </c:forEach>
     <br>

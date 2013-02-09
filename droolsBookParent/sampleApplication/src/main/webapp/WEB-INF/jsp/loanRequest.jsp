@@ -12,7 +12,7 @@
 </head>
 <body>
 <h1><fmt:message key="loanRequest.heading" /></h1>
-<form:form method="post" commandName="loanRequest">
+<form:form method="post" modelAttribute="loanRequest">
 	<table width="100%" bgcolor="f8f8ff" border="0" 
 		cellspacing="0"	cellpadding="5">
 		<tr>

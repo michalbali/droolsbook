@@ -9,7 +9,7 @@
   <tr>
     <td>id</td><td>priority</td><td>status</td><td>name</td>
   </tr>
-  <c:forEach items="${model.tasks}" var="task">
+  <c:forEach items="${tasks}" var="task">
   <tr>
     <td><c:out value="${task.id}"/></td>
     <td><c:out value="${task.priority}"/></td>

@@ -8,7 +8,7 @@
 }
 </style></head>
 <body><h1><fmt:message key="customerSave.heading" /></h1>
-<form:form method="post" commandName="customerSave">
+<form:form modelAttribute="customer" method="post">
 	<table width="100%" bgcolor="f8f8ff" border="0" 
 		cellspacing="0"	cellpadding="5">
 		<c:forEach items="${errors}" var="error">
