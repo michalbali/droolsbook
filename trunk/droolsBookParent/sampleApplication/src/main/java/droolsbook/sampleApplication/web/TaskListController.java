@@ -1,39 +1,32 @@
 package droolsbook.sampleApplication.web;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
 import org.jbpm.task.TaskService;
 import org.jbpm.task.query.TaskSummary;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.servlet.ModelAndView;
-import org.springframework.web.servlet.mvc.AbstractController;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.RequestMapping;
 
 import droolsbook.bank.model.User;
 
 // @extract-start 08 04
-public class TaskListController extends AbstractController {
+@Controller
+public class TaskListController  {
   @Autowired
   private TaskService client;
   @Autowired
   private WebSessionUtils webSessionUtils;
 
-  @Override
-  protected ModelAndView handleRequestInternal(
-      HttpServletRequest request,HttpServletResponse response)
-      throws Exception {
+  @RequestMapping("/taskList.htm")
+  public String handleRequestInternal(Model model) {
     User user = webSessionUtils.getUser();
-    List<TaskSummary> tasks = client.getTasksAssignedAsPotentialOwner(user.getUserId(),
-        user.getLanguage());
-
-    Map<String, Object> model = new HashMap<String, Object>();
-    model.put("tasks", tasks);
-
-    return new ModelAndView("taskList", "model", model);
+    List<TaskSummary> tasks = client
+        .getTasksAssignedAsPotentialOwner(user.getUserId(),
+            user.getLanguage());
+    model.addAttribute("tasks", tasks);
+    return "taskList";
   }
 }
 // @extract-end

@@ -267,6 +267,16 @@
       <artifactId>spring-webmvc</artifactId>
       <version>${spring.ver}</version>
     </dependency>
+    <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-web</artifactId>
+      <version>${spring.ver}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-jdbc</artifactId>
+      <version>${spring.ver}</version>
+    </dependency>
      <dependency>
       <groupId>org.springframework</groupId>
       <artifactId>spring-tx</artifactId>
@@ -321,11 +331,6 @@
                 
 
     <!-- Web -->
-    <dependency>
-      <groupId>javax.servlet</groupId>
-      <artifactId>servlet-api</artifactId>
-      <version>2.5</version>
-    </dependency>
     <dependency>
       <groupId>javax.servlet</groupId>
       <artifactId>jstl</artifactId>
@@ -467,7 +472,7 @@
     <drools.ver>5.5.0.Final</drools.ver>
     <jbpm.version>5.4.0.Final</jbpm.version>
     
-    <spring.ver>3.0.6.RELEASE</spring.ver> <!-- TODO: upgrade to 3.2.1.RELEASE -->
+    <spring.ver>3.2.1.RELEASE</spring.ver>
     
     <!-- Make build platform independent -->
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
