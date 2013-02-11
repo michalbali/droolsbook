@@ -49,13 +49,7 @@
     </dependency>
     <dependency>
       <groupId>org.drools</groupId>
-      <artifactId>drools-persistence-jpa</artifactId>
-      <!-- <exclusions>
-        <exclusion>
-          <groupId>javax.transaction</groupId>
-          <artifactId>jta</artifactId>
-        </exclusion>
-      </exclusions> -->
+      <artifactId>drools-persistence-jpa</artifactId>      
     </dependency>
                <dependency>
                  <groupId>org.jbpm</groupId>
