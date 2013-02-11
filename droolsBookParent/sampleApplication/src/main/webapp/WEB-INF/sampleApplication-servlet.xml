@@ -14,7 +14,8 @@
   
   <context:annotation-config />
   
-  <context:component-scan base-package="droolsbook.sampleApplication.web"/>
+  <context:component-scan 
+    base-package="droolsbook.sampleApplication.web"/>
 
   <bean id="messageSource"
     class="org.springframework.context.support.ResourceBundleMessageSource">
