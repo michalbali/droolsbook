@@ -17,7 +17,7 @@ import droolsbook.sampleApplication.repository.CustomerRepository;
 public class JPACustomerRepository implements
     CustomerRepository {
 
-  @PersistenceContext(unitName="entityManagerFactory")
+  @PersistenceContext
   private EntityManager em;
 
   public Customer findCustomerByUuid(String customerUuid) {

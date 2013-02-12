@@ -28,7 +28,7 @@
       value="org.springframework.web.servlet.view.JstlView" />
     <property name="prefix" value="/WEB-INF/jsp/" />
     <property name="suffix" value=".jsp" />
-  </bean>
+  </bean> 
 
   <bean name="webSessionUtils" class="droolsbook.sampleApplication.web.WebSessionUtils" />
 

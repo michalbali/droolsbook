@@ -1,7 +1,6 @@
 package droolsbook.sampleApplication.repository;
 
 import java.util.List;
-import java.util.UUID;
 
 import droolsbook.bank.model.Customer;
 
