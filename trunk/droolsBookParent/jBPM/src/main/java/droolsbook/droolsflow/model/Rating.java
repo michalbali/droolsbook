@@ -1,7 +1,14 @@
 package droolsbook.droolsflow.model;
 
-public class Rating {
+import java.io.Serializable;
 
+public class Rating implements Serializable {
+
+  /**
+   * 
+   */
+  private static final long serialVersionUID = 1L;
+  
   private Integer rating;
 
   public Integer getRating() {

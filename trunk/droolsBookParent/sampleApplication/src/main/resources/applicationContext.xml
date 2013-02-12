@@ -10,9 +10,11 @@
        http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-3.2.xsd
        http://drools.org/schema/drools-spring http://drools.org/schema/drools-spring.xsd">
 
-  <bean id="transactionManager" class="org.springframework.orm.jpa.JpaTransactionManager">
-    <property name="entityManagerFactory" ref="entityManagerFactory" />
-  </bean>
+<bean id="transactionManager" 
+  class="org.springframework.orm.jpa.JpaTransactionManager">
+  <property name="entityManagerFactory" 
+    ref="entityManagerFactory" />
+</bean>
 
 <aop:config>
   <aop:pointcut id="bankingServiceMethods"
@@ -124,11 +126,12 @@
   class="droolsbook.sampleApplication.repository.jpa.JPACustomerRepository" />
 
 
-  <drools:kbase id="validationKnowledge">
-      <drools:resources>
-      <drools:resource type="DRL" source="classpath:validation.drl" />
-    </drools:resources>
-  </drools:kbase>
+<drools:kbase id="validationKnowledge">
+  <drools:resources>
+    <drools:resource type="DRL" 
+      source="classpath:validation.drl" />
+  </drools:resources>
+</drools:kbase>
 
   <drools:kbase id="loanApprovalKnowledge">
       <drools:resources>
