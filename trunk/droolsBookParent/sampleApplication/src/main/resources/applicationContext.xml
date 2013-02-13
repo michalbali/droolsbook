@@ -71,12 +71,12 @@
   
 <bean id="knowledgeSessionLookup" init-method="init"
   class="droolsbook.org.drools.persistence.JPAKnowledgeSessionLookup" > 
-  <property name="knowledgeBase" 
-    ref="loanApprovalKnowledge" />
+  <property name="knowledgeBase" ref="loanApprovalKnowledge"/>
   <property name="emailHandler" ref="emailWorkItemHandler"/>
   <property name="transferFundsHandler" 
     ref="transferFundsWorkItemHandler"/>
-  <property name="transactionManager" ref="transactionManager" />
+  <property name="transactionManager" 
+    ref="transactionManager" />
   <property name="taskService" ref="localTaskService" />
 </bean>
 
@@ -86,32 +86,37 @@
 
 
 
-  <bean id="localTaskService" class="org.jbpm.task.service.local.LocalTaskService" depends-on="springTaskSessionFactory" >
-    <constructor-arg ref="taskService" />
-  </bean>
+<bean id="localTaskService" 
+  class="org.jbpm.task.service.local.LocalTaskService" 
+  depends-on="springTaskSessionFactory" >
+  <constructor-arg ref="taskService" />
+</bean>
 
-  <bean id="taskService" class="org.jbpm.task.service.TaskService" >
-    <property name="systemEventListener" >
-      <bean class="org.drools.SystemEventListenerFactory" factory-method="getSystemEventListener" />
-    </property>
-  </bean>
+<bean id="taskService" 
+  class="org.jbpm.task.service.TaskService" >
+  <property name="systemEventListener" >
+    <bean class="org.drools.SystemEventListenerFactory" 
+      factory-method="getSystemEventListener" />
+  </property>
+</bean>
 
-  <bean id="springTaskSessionFactory" class="org.jbpm.task.service.persistence.TaskSessionSpringFactoryImpl"
-        init-method="initialize" depends-on="taskService" >
-    <!-- if using the SharedEntityManagerBean, make sure to enable nested transactions -->
-    <property name="entityManager" >
-      <bean class="org.springframework.orm.jpa.support.SharedEntityManagerBean">
-        <property name="entityManagerFactory" ref="entityManagerFactory"/>
-      </bean>
-    </property>
-    <property name="transactionManager" >
-      <bean class="org.drools.container.spring.beans.persistence.HumanTaskSpringTransactionManager">
-        <constructor-arg ref="transactionManager" />
-      </bean>
-    </property>
-    <property name="useJTA" value="false" />
-    <property name="taskService" ref="taskService" />
-  </bean> 
+<bean id="springTaskSessionFactory" class="org.jbpm.task.service.persistence.TaskSessionSpringFactoryImpl"
+      init-method="initialize" depends-on="taskService" >
+  <property name="entityManager" >
+    <bean class="org.springframework.orm.jpa.support.SharedEntityManagerBean">
+      <property name="entityManagerFactory" 
+        ref="entityManagerFactory"/>
+    </bean>
+  </property>
+  <property name="transactionManager" >
+    <bean class="org.drools.container.spring.beans.persistence.HumanTaskSpringTransactionManager">
+      <constructor-arg ref="transactionManager" />
+    </bean>
+  </property>
+  <property name="useJTA" value="false" />
+  <property name="taskService" ref="taskService" />
+</bean> 
+  <!-- if using the SharedEntityManagerBean, make sure to enable nested transactions -->
   
 
 
