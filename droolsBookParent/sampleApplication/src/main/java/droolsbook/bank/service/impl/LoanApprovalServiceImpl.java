@@ -9,10 +9,7 @@ import javax.persistence.PersistenceContext;
 import org.drools.command.runtime.process.SignalEventCommand;
 import org.drools.runtime.StatefulKnowledgeSession;
 import org.drools.runtime.process.ProcessInstance;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Repository;
-import org.springframework.transaction.support.TransactionSynchronizationAdapter;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
 
 import droolsbook.bank.model.Account;
@@ -60,7 +57,10 @@ public class LoanApprovalServiceImpl implements
       session.insert(processInstance);
       session.fireAllRules();
     } finally {
-      TransactionSynchronizationManager.registerSynchronization(new SessionCleanupTransactionSynchronisation(session, "requestLoan"));
+      TransactionSynchronizationManager
+          .registerSynchronization(new 
+              SessionCleanupTransactionSynchronisation(
+              session, "requestLoan"));
     }
     return holder;
   }
@@ -84,7 +84,10 @@ public class LoanApprovalServiceImpl implements
       command.setEvent(true);
       session.execute(command);
     } finally {
-      TransactionSynchronizationManager.registerSynchronization(new SessionCleanupTransactionSynchronisation(session, "approveLoan"));
+      TransactionSynchronizationManager
+          .registerSynchronization(new 
+              SessionCleanupTransactionSynchronisation(
+              session, "approveLoan"));
     }
   }
   // @extract-end
@@ -92,26 +95,6 @@ public class LoanApprovalServiceImpl implements
   public void setSessionLookup(
       KnowledgeSessionLookup sessionLookup) {
     this.sessionLookup = sessionLookup;
-  }
-  
-  public static class SessionCleanupTransactionSynchronisation extends TransactionSynchronizationAdapter {
-    protected final Logger logger = LoggerFactory.getLogger(getClass());
-    private StatefulKnowledgeSession session;
-    private String sourceName;
-    public SessionCleanupTransactionSynchronisation(
-        StatefulKnowledgeSession session, String sourceName) {
-      this.session = session;
-      this.sourceName = sourceName;
-    }
-    @Override
-    public void afterCompletion(int status) {
-      //note: not interested in rollback
-      logger.debug("disposing session: {}, sourceName: {}", session, sourceName);
-      session.dispose();
-      
-      //TODO: unregister?
-    }
-    
   }
 
 }

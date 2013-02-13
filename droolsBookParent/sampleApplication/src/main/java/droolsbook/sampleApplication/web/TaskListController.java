@@ -15,14 +15,14 @@ import droolsbook.bank.model.User;
 @Controller
 public class TaskListController  {
   @Autowired
-  private TaskService client;
+  private TaskService taskService;
   @Autowired
   private WebSessionUtils webSessionUtils;
 
   @RequestMapping("/taskList.htm")
-  public String handleRequestInternal(Model model) {
+  public String taskList(Model model) {
     User user = webSessionUtils.getUser();
-    List<TaskSummary> tasks = client
+    List<TaskSummary> tasks = taskService
         .getTasksAssignedAsPotentialOwner(user.getUserId(),
             user.getLanguage());
     model.addAttribute("tasks", tasks);

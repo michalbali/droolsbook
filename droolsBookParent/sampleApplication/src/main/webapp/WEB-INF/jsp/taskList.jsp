@@ -21,7 +21,8 @@
       <a href="<c:url value="taskStart.htm"><c:param 
        name="taskId" value="${task.id}"/></c:url>">Start</a>
       <a href="<c:url value="taskComplete.htm"><c:param 
-       name="taskId" value="${task.id}"/></c:url>">Complete</a>
+       name="taskId" value="${task.id}"/></c:url>"
+       >Complete</a>
   	</td>
   </tr>
   </c:forEach>

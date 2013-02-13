@@ -25,65 +25,70 @@ import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
 import org.springframework.transaction.support.TransactionTemplate;
 
-import droolsbook.bank.service.impl.LoanApprovalServiceImpl.SessionCleanupTransactionSynchronisation;
+import droolsbook.bank.service.impl.SessionCleanupTransactionSynchronisation;
 
-public class CustomLocalHTWorkItemHandler extends LocalHTWorkItemHandler {
-
+public class DetachedLocalHTWorkItemHandler extends
+    LocalHTWorkItemHandler {
   private KnowledgeSessionLookup knowledgeSessionLookup;
-  
-  public CustomLocalHTWorkItemHandler(KnowledgeRuntime session) {
-    super(session);
-  }
 
-  public CustomLocalHTWorkItemHandler(KnowledgeRuntime session,
-      boolean owningSessionOnly) {
-    super(session, owningSessionOnly);
-  }
-
-  public CustomLocalHTWorkItemHandler(TaskService client,
-      KnowledgeRuntime session, KnowledgeSessionLookup knowledgeSessionLookup) {
+  public DetachedLocalHTWorkItemHandler(TaskService client,
+      KnowledgeRuntime session,
+      KnowledgeSessionLookup knowledgeSessionLookup) {
     super(client, session);
     this.knowledgeSessionLookup = knowledgeSessionLookup;
   }
 
-  public CustomLocalHTWorkItemHandler(KnowledgeRuntime session,
+  public DetachedLocalHTWorkItemHandler(KnowledgeRuntime session) {
+    super(session);
+  }
+  public DetachedLocalHTWorkItemHandler(KnowledgeRuntime session,
+      boolean owningSessionOnly) {
+    super(session, owningSessionOnly);
+  }
+  public DetachedLocalHTWorkItemHandler(KnowledgeRuntime session,
       OnErrorAction action) {
     super(session, action);
   }
 
-  public CustomLocalHTWorkItemHandler(TaskService client,
+  public DetachedLocalHTWorkItemHandler(TaskService client,
       KnowledgeRuntime session, boolean owningSessionOnly) {
     super(client, session, owningSessionOnly);
   }
 
-  public CustomLocalHTWorkItemHandler(TaskService client,
+  public DetachedLocalHTWorkItemHandler(TaskService client,
       KnowledgeRuntime session, OnErrorAction action) {
     super(client, session, action);
   }
 
-  public CustomLocalHTWorkItemHandler(TaskService client,
+  public DetachedLocalHTWorkItemHandler(TaskService client,
       KnowledgeRuntime session, OnErrorAction action, ClassLoader classLoader) {
     super(client, session, action, classLoader);
   }
   
   
   protected void registerTaskEvents() {
-    //super.registerTaskEvents();
-
-    //we'll register our own task completed handler
-    CustomTaskCompletedHandler eventResponseHandler = new CustomTaskCompletedHandler();
-    TaskEventKey key = new TaskEventKey(TaskCompletedEvent.class, -1);
-    getClient().registerForEvent(key, false, eventResponseHandler);
+    // super.registerTaskEvents();
+    // we'll register our own task completed handler
+    DetachedTaskCompletedHandler eventResponseHandler = 
+        new DetachedTaskCompletedHandler();
+    TaskEventKey key = new TaskEventKey(
+        TaskCompletedEvent.class, -1);
+    getClient().registerForEvent(key, false,
+        eventResponseHandler);
     eventHandlers.put(key, eventResponseHandler);
     key = new TaskEventKey(TaskFailedEvent.class, -1);
-    getClient().registerForEvent(key, false, eventResponseHandler);
+    getClient().registerForEvent(key, false,
+        eventResponseHandler);
     eventHandlers.put(key, eventResponseHandler);
     key = new TaskEventKey(TaskSkippedEvent.class, -1);
-    getClient().registerForEvent(key, false, eventResponseHandler);
+    getClient().registerForEvent(key, false,
+        eventResponseHandler);
     eventHandlers.put(key, eventResponseHandler);
   }
    
-  private class CustomTaskCompletedHandler extends AbstractBaseResponseHandler implements EventResponseHandler {
+  private class DetachedTaskCompletedHandler extends
+      AbstractBaseResponseHandler implements
+      EventResponseHandler {
 
     public void execute(Payload payload) {
         TaskEvent event = (TaskEvent) payload.get();
@@ -154,16 +159,18 @@ public class CustomLocalHTWorkItemHandler extends LocalHTWorkItemHandler {
 
     private void doCompleteWorkItem(Task task,
         long workItemId, Map<String, Object> results) {
-      StatefulKnowledgeSession session = knowledgeSessionLookup
-          .loadSession(task.getTaskData()
-              .getProcessSessionId());
+      StatefulKnowledgeSession session = 
+          knowledgeSessionLookup.loadSession(
+              task.getTaskData().getProcessSessionId());
       try {
         session.getWorkItemManager().completeWorkItem(
             workItemId, results);
       } finally {
         TransactionSynchronizationManager
-            .registerSynchronization(new SessionCleanupTransactionSynchronisation(
-                session, "CustomTaskCompletedHandler.complete"));
+            .registerSynchronization(
+                new SessionCleanupTransactionSynchronisation(
+                session, 
+                "DetachedTaskCompletedHandler.complete"));
         try {
           dispose();
         } catch (Exception e) {
