@@ -20,14 +20,14 @@
   <aop:pointcut id="bankingServiceMethods"
     expression="execution(*
     droolsbook.bank.service.BankingService.*(..))" />
-  <aop:pointcut id="taskServiceMethods"
+  <aop:pointcut id="localTaskServiceMethods"
     expression="execution(* 
     org.jbpm.task.TaskService.*(..))" />  
     
   <aop:advisor advice-ref="transactionAdvice"
     pointcut-ref="bankingServiceMethods" />
   <aop:advisor advice-ref="transactionAdvice"
-    pointcut-ref="taskServiceMethods" />  
+    pointcut-ref="localTaskServiceMethods" />  
 </aop:config>
 
 <tx:advice id="transactionAdvice" 

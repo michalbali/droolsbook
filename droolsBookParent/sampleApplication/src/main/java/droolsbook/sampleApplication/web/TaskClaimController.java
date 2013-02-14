@@ -10,7 +10,7 @@ import droolsbook.bank.model.User;
 @Controller
 public class TaskClaimController {
   @Autowired
-  private TaskService taskService;
+  private TaskService localTaskService;
   @Autowired
   private WebSessionUtils webSessionUtils;
 
@@ -21,7 +21,7 @@ public class TaskClaimController {
   @RequestMapping("/taskClaim.htm")
   public String taskClaim(Long taskId) {
     User user = webSessionUtils.getUser();
-    taskService.claim(taskId, user.getUserId());
+    localTaskService.claim(taskId, user.getUserId());
     return "redirect:taskList.htm";
   }
   // @extract-end

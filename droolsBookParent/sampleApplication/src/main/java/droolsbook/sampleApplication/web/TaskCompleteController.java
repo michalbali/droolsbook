@@ -9,11 +9,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 public class TaskCompleteController {
 
   @Autowired
-  private TaskService taskService;
+  private TaskService localTaskService;
 
   @RequestMapping("/taskComplete.htm")
   public String taskComplete(Long taskId) {
-    taskService.complete(taskId, "123", null);
+    localTaskService.complete(taskId, "123", null);
     return "redirect:taskList.htm";
   }
 
