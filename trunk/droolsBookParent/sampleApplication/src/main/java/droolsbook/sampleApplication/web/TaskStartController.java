@@ -9,11 +9,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 public class TaskStartController {
 
   @Autowired
-  private TaskService taskService;
+  private TaskService localTaskService;
   
   @RequestMapping("/taskStart.htm")
   public String taskStart(Long taskId) {
-    taskService.start(taskId, "123");
+    localTaskService.start(taskId, "123");
     return "redirect:taskList.htm";
   }
   

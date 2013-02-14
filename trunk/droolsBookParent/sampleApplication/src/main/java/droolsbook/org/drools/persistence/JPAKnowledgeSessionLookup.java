@@ -18,6 +18,7 @@ import org.drools.runtime.process.WorkItemHandler;
 import org.drools.runtime.process.WorkItemManager;
 import org.jbpm.persistence.JpaProcessPersistenceContext;
 import org.jbpm.persistence.MapProcessPersistenceContextManager;
+import org.jbpm.process.workitem.wsht.LocalHTWorkItemHandler;
 import org.jbpm.task.TaskService;
 import org.springframework.transaction.support.AbstractPlatformTransactionManager;
 import org.springframework.transaction.support.TransactionTemplate;
@@ -39,7 +40,7 @@ public class JPAKnowledgeSessionLookup implements
 
   private WorkItemHandler emailHandler;
   private WorkItemHandler transferFundsHandler;
-  private TaskService taskService;
+  private TaskService localTaskService;
 
   public void init() {
     environment = EnvironmentFactory.newEnvironment();
@@ -81,7 +82,7 @@ public class JPAKnowledgeSessionLookup implements
       StatefulKnowledgeSession session) {
     WorkItemManager manager = session.getWorkItemManager();
     manager.registerWorkItemHandler("Human Task",
-        new DetachedLocalHTWorkItemHandler(taskService,
+        new DetachedLocalHTWorkItemHandler(localTaskService,
             session, this));
     manager.registerWorkItemHandler("Email", emailHandler);
     manager.registerWorkItemHandler("Transfer Funds",
@@ -98,17 +99,17 @@ public class JPAKnowledgeSessionLookup implements
     });
   }
 
-  private static class LocalJpaProcessPersistenceContext
-      extends JpaProcessPersistenceContext {
-    public LocalJpaProcessPersistenceContext(EntityManager em) {
-      super(em);
-    }
-
-    @Override
-    public void joinTransaction() {
-      // ignore this call for non JTA environment
-    }
+private static class LocalJpaProcessPersistenceContext
+    extends JpaProcessPersistenceContext {
+  public LocalJpaProcessPersistenceContext(EntityManager em) {
+    super(em);
   }
+
+  @Override
+  public void joinTransaction() {
+    // ignore this call for non JTA environment
+  }
+}
 
   public void setKnowledgeBase(KnowledgeBase knowledgeBase) {
     this.knowledgeBase = knowledgeBase;
@@ -129,7 +130,7 @@ public class JPAKnowledgeSessionLookup implements
   }
 
   public void setTaskService(TaskService taskService) {
-    this.taskService = taskService;
+    this.localTaskService = taskService;
   }
 
 }
