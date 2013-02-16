@@ -1,28 +1,28 @@
-package droolsbook.bank.service.impl;
+package droolsbook.org.drools.persistence;
 
 import org.drools.runtime.StatefulKnowledgeSession;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.jbpm.process.workitem.wsht.LocalHTWorkItemHandler;
 import org.springframework.transaction.support.TransactionSynchronizationAdapter;
 
 public class SessionCleanupTransactionSynchronisation extends
     TransactionSynchronizationAdapter {
-  protected final Logger logger = LoggerFactory
-      .getLogger(getClass());
   private StatefulKnowledgeSession session;
-  private String sourceName;
+  private LocalHTWorkItemHandler hTHandler;
 
   public SessionCleanupTransactionSynchronisation(
-      StatefulKnowledgeSession session, String sourceName) {
+      StatefulKnowledgeSession session, LocalHTWorkItemHandler hTHandler) {
     this.session = session;
-    this.sourceName = sourceName;
+    this.hTHandler = hTHandler;
   }
 
   @Override
   public void afterCompletion(int status) {
     // note: not interested in rollback
-    logger.debug("disposing session: {}, sourceName: {}",
-        session, sourceName);
+    try {
+      hTHandler.dispose();
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
     session.dispose();
   }
 }

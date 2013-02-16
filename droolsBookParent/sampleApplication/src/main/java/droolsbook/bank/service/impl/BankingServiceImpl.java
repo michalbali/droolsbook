@@ -11,9 +11,9 @@ import droolsbook.bank.service.BankingService;
 import droolsbook.bank.service.BankingValidationService;
 import droolsbook.bank.service.CEPService;
 import droolsbook.bank.service.LoanApprovalService;
+import droolsbook.bank.service.Message.Type;
 import droolsbook.bank.service.ValidationException;
 import droolsbook.bank.service.ValidationReport;
-import droolsbook.bank.service.Message.Type;
 import droolsbook.sampleApplication.repository.CustomerRepository;
 
 public class BankingServiceImpl implements BankingService {
@@ -97,6 +97,21 @@ public class BankingServiceImpl implements BankingService {
   
   public void setCepService(CEPService cepService) {
     this.cepService = cepService;
+  }
+
+  @Override
+  public void claim(long taskId, String userId) {
+    loanApprovalService.claim(taskId, userId);
+  }
+  
+  @Override
+  public void complete(long taskId, String userId) {
+    loanApprovalService.complete(taskId, userId);
+  }
+
+  @Override
+  public void start(long taskId, String userId) {
+    loanApprovalService.start(taskId, userId);
   }
 
 }

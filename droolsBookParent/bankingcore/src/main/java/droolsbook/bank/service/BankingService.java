@@ -2,7 +2,6 @@ package droolsbook.bank.service;
 
 import java.math.BigDecimal;
 import java.util.List;
-import java.util.Map;
 
 import droolsbook.bank.model.Account;
 import droolsbook.bank.model.Customer;
@@ -20,4 +19,9 @@ public interface BankingService {
   
   void transfer(Account sourceAccount,
       Account destinationAccount, BigDecimal sum);
+  
+  
+  void claim(long taskId, String userId);
+  void start(long taskId, String userId);
+  void complete(long taskId, String userId);
 }

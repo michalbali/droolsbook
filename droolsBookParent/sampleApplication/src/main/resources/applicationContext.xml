@@ -22,12 +22,12 @@
     droolsbook.bank.service.BankingService.*(..))" />
   <aop:pointcut id="localTaskServiceMethods"
     expression="execution(* 
-    org.jbpm.task.TaskService.*(..))" />  
+    org.jbpm.task.TaskService.*(..))" />
     
   <aop:advisor advice-ref="transactionAdvice"
     pointcut-ref="bankingServiceMethods" />
   <aop:advisor advice-ref="transactionAdvice"
-    pointcut-ref="localTaskServiceMethods" />  
+    pointcut-ref="localTaskServiceMethods" />
 </aop:config>
 
 <tx:advice id="transactionAdvice" 
@@ -69,8 +69,8 @@
   <property name="password" value="sasa" />
 </bean>
   
-<bean id="knowledgeSessionLookup" init-method="init"
-  class="droolsbook.org.drools.persistence.JPAKnowledgeSessionLookup" > 
+<bean id="knowledgeSessionTemplate" init-method="init"
+  class="droolsbook.org.drools.persistence.JPAKnowledgeSessionTemplate" > 
   <property name="knowledgeBase" ref="loanApprovalKnowledge"/>
   <property name="emailHandler" ref="emailWorkItemHandler"/>
   <property name="transferFundsHandler" 
@@ -156,7 +156,8 @@
 
 <bean name="loanApprovalService"
  class="droolsbook.bank.service.impl.LoanApprovalServiceImpl">
- <property name="sessionLookup" ref="knowledgeSessionLookup"/>
+ <property name="sessionTemplate" ref="knowledgeSessionTemplate"/>
+ <property name="localTaskService" ref="localTaskService"/>
 </bean>
   
   <bean name="cepService" class="droolsbook.bank.service.impl.CEPServiceImpl">

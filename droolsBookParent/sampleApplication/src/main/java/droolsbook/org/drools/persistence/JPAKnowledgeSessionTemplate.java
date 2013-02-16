@@ -21,15 +21,15 @@ import org.jbpm.persistence.MapProcessPersistenceContextManager;
 import org.jbpm.process.workitem.wsht.LocalHTWorkItemHandler;
 import org.jbpm.task.TaskService;
 import org.springframework.transaction.support.AbstractPlatformTransactionManager;
+import org.springframework.transaction.support.TransactionSynchronizationManager;
 import org.springframework.transaction.support.TransactionTemplate;
+
 
 // @extract-start 08 11
 /**
- * works with persistable knowledge sessions
+ * performs actions with new or persisted knowledge sessions
  */
-public class JPAKnowledgeSessionLookup implements
-    KnowledgeSessionLookup {
-
+public class JPAKnowledgeSessionTemplate {
   @PersistenceContext
   private EntityManager em;
   private AbstractPlatformTransactionManager 
@@ -58,20 +58,45 @@ public class JPAKnowledgeSessionLookup implements
             .newSerializeMarshallingStrategy() });
   }
 
-  public StatefulKnowledgeSession newSession() {
+  /**
+   * performs action on a new persistable knowledge session
+   * @param action to perform
+   */
+  public void doWithNewSession(KnowledgeSessionCallback 
+      action) {
     StatefulKnowledgeSession session = JPAKnowledgeService
         .newStatefulKnowledgeSession(knowledgeBase, null,
             environment);
-    registerWorkItemHandlers(session);
-    return session;
+    execute(action, session);
   }
 
-  public StatefulKnowledgeSession loadSession(int sessionId) {
+  /**
+   * performs action on existing persisted knowledge session
+   * @param sessionId prikary key of persisted session
+   * @param action to perform
+   */
+  public void doWithLoadedSession(int sessionId,
+      KnowledgeSessionCallback action) {
     StatefulKnowledgeSession session = JPAKnowledgeService
         .loadStatefulKnowledgeSession(sessionId,
             knowledgeBase, null, environment);
-    registerWorkItemHandlers(session);
-    return session;
+    execute(action, session);
+  }
+  
+  private void execute(KnowledgeSessionCallback action,
+      StatefulKnowledgeSession session) {
+    LocalHTWorkItemHandler hTHandler = 
+        new LocalHTWorkItemHandler(localTaskService, session, 
+            true);
+    try {
+      registerWorkItemHandlers(session, hTHandler);
+      action.execute(session);
+    } finally {
+      TransactionSynchronizationManager
+          .registerSynchronization(new 
+              SessionCleanupTransactionSynchronisation(
+              session, hTHandler));
+    }
   }
 
   /**
@@ -79,11 +104,11 @@ public class JPAKnowledgeSessionLookup implements
    * (they are not persisted)
    */
   private void registerWorkItemHandlers(
-      StatefulKnowledgeSession session) {
+      StatefulKnowledgeSession session,
+      LocalHTWorkItemHandler hTHandler) {
     WorkItemManager manager = session.getWorkItemManager();
-    manager.registerWorkItemHandler("Human Task",
-        new DetachedLocalHTWorkItemHandler(localTaskService,
-            session, this));
+    hTHandler.connect();
+    manager.registerWorkItemHandler("Human Task", hTHandler);
     manager.registerWorkItemHandler("Email", emailHandler);
     manager.registerWorkItemHandler("Transfer Funds",
         transferFundsHandler);
