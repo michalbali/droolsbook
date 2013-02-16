@@ -6,11 +6,12 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import droolsbook.bank.model.User;
+import droolsbook.bank.service.BankingService;
 
 @Controller
 public class TaskClaimController {
   @Autowired
-  private TaskService localTaskService;
+  private BankingService bankingService;
   @Autowired
   private WebSessionUtils webSessionUtils;
 
@@ -21,7 +22,7 @@ public class TaskClaimController {
   @RequestMapping("/taskClaim.htm")
   public String taskClaim(Long taskId) {
     User user = webSessionUtils.getUser();
-    localTaskService.claim(taskId, user.getUserId());
+    bankingService.claim(taskId, user.getUserId());
     return "redirect:taskList.htm";
   }
   // @extract-end
