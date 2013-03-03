@@ -28,6 +28,7 @@
     <module>performance</module>
     
     <module>sampleApplication</module>
+    <!-- <module>camelServer</module> -->
   </modules>
   <dependencies>
     <dependency>
@@ -113,6 +114,11 @@
       <dependency>
         <groupId>org.drools</groupId>
         <artifactId>drools-compiler</artifactId>
+        <version>${drools.ver}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.drools</groupId>
+        <artifactId>drools-camel</artifactId>
         <version>${drools.ver}</version>
       </dependency>
                <dependency>
@@ -280,6 +286,11 @@
      <dependency>
       <groupId>org.springframework</groupId>
       <artifactId>spring-tx</artifactId>
+      <version>${spring.ver}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-aop</artifactId>
       <version>${spring.ver}</version>
     </dependency>
     <dependency>
