@@ -16,7 +16,7 @@
     <pathelement location="${droolsPath}/drools-compiler.jar" />
     <pathelement location="${droolsPath}/antlr-runtime.jar" />
     <pathelement location="${droolsPath}/mvel2.jar" />
-    <pathelement location="${droolsPath}/core.jar" />
+    <pathelement location="${droolsPath}/ecj.jar" />
   	<pathelement location="${droolsPath}/slf4j-api.jar" />
     <!-- put all required drools libraries here -->
   </path>
