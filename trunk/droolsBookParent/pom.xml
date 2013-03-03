@@ -28,7 +28,6 @@
     <module>performance</module>
     
     <module>sampleApplication</module>
-    <!-- <module>camelServer</module> -->
   </modules>
   <dependencies>
     <dependency>
