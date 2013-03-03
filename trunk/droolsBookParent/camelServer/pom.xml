@@ -1,0 +1,144 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>droolsbook</groupId>
+  <artifactId>camelServer</artifactId>
+  <packaging>war</packaging>
+  <version>1.0-SNAPSHOT</version>
+  <name>Camel Server</name>
+  <!-- <parent>
+    <groupId>droolsbook</groupId>
+    <artifactId>parent</artifactId>
+    <version>1.1-SNAPSHOT</version>
+  </parent> -->
+  <properties>
+    <camel.version>2.9.0</camel.version>
+    <cxf.version>2.4.4</cxf.version>
+    <springframework.version>3.0.6.RELEASE</springframework.version>
+    
+    <drools.ver>5.5.0.Final</drools.ver>
+    <jbpm.version>5.4.0.Final</jbpm.version>
+    
+    <!-- Make build platform independent -->
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+  </properties>
+  
+  <dependencies>
+    <dependency>
+        <groupId>droolsbook</groupId>
+        <artifactId>decision_tables</artifactId>
+        <version>1.1-SNAPSHOT</version>
+      </dependency>
+  
+    <dependency>
+      <groupId>org.drools</groupId>
+      <artifactId>drools-core</artifactId>
+      <version>${drools.ver}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.drools</groupId>
+      <artifactId>drools-compiler</artifactId>
+      <version>${drools.ver}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.drools</groupId>
+      <artifactId>drools-decisiontables</artifactId>
+      <version>${drools.ver}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.drools</groupId>
+      <artifactId>drools-spring</artifactId>
+      <version>${drools.ver}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.drools</groupId>
+      <artifactId>drools-camel</artifactId>
+      <version>${drools.ver}</version>
+    </dependency>
+    
+    
+    <!-- Camel -->
+    <!-- <dependency>
+      <groupId>org.apache.camel</groupId>
+      <artifactId>camel-core</artifactId>
+      <version>2.9.0</version>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.camel</groupId>
+      <artifactId>camel-spring</artifactId>
+      <version>2.9.0</version>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.camel</groupId>
+      <artifactId>camel-test</artifactId>
+      <version>2.9.0</version>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.camel</groupId>
+      <artifactId>camel-cxf</artifactId>
+      <version>2.9.0</version>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.camel</groupId>
+      <artifactId>camel-xstream</artifactId>
+      <version>2.9.0</version>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.camel</groupId>
+      <artifactId>camel-jaxb</artifactId>
+      <version>2.9.0</version>
+    </dependency> -->
+
+    <!-- Spring -->
+    <!-- <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-core</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-aop</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-web</artifactId>
+    </dependency> -->
+    
+    
+    <dependency>
+        <groupId>org.slf4j</groupId>
+        <artifactId>slf4j-log4j12</artifactId>
+        <version>1.6.4</version>
+      </dependency>
+      <dependency>
+        <groupId>org.slf4j</groupId>
+        <artifactId>slf4j-api</artifactId>
+        <version>1.6.4</version>
+      </dependency>
+      <dependency>
+        <groupId>org.slf4j</groupId>
+        <artifactId>jcl-over-slf4j</artifactId>
+        <version>1.6.4</version>
+      </dependency>
+    
+  </dependencies>
+  <build>
+    <finalName>droolsBook-camelServer</finalName>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-eclipse-plugin</artifactId>
+        <version>2.8</version>
+        <configuration>
+          <useProjectReferences>false</useProjectReferences>
+          <downloadSources>true</downloadSources>
+          <!-- <projectNameTemplate>[artifactId]-[version]</projectNameTemplate>  -->
+          <wtpmanifest>true</wtpmanifest>
+          <!--<wtpapplicationxml>true</wtpapplicationxml>
+          --><wtpversion>2.0</wtpversion>
+          <manifest>${basedir}/src/main/resources/META-INF/MANIFEST.MF</manifest>
+          <!-- useProjectReferences = false ? -->
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+</project>
