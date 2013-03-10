@@ -1,0 +1,63 @@
+//NOTE: This file has been copied from project 'validation'
+
+package droolsbook.validation;
+
+import org.drools.runtime.rule.RuleContext;
+ 
+import droolsbook.bank.model.*;
+import droolsbook.bank.service.*;
+
+global ValidationReport validationReport;
+global ReportFactory reportFactory;
+global BankingInquiryService inquiryService;
+
+import function 
+	droolsbook.bank.service.ValidationHelper.error;
+import function 
+	droolsbook.bank.service.ValidationHelper.warning;
+
+import function droolsbook.bank.service.ValidationHelper.yearsPassedSince;
+
+rule "addressRequired"
+	when
+		Customer( address == null )
+	then
+		warning(kcontext);
+end
+
+rule "phoneNumberRequired"
+ 	when
+ 		Customer( phoneNumber == null || == "" )		
+	then
+		error(kcontext);
+end
+
+rule "accountOwnerRequired"
+	when
+		$account : Account( owner == null )		
+	then		
+		error(kcontext, $account);
+end
+
+rule "studentAccountCustomerAgeLessThan"
+	when				
+		Customer( eval (yearsPassedSince(dateOfBirth) >= 27) )
+		$account : Account( type == Account.Type.STUDENT )		
+	then
+		error(kcontext, $account);
+end
+
+rule "accountBalanceAtLeast"
+	when
+		$account : Account( balance < 100 )		
+	then		
+		warning(kcontext, $account);
+end 
+
+rule "accountNumberUnique"
+	when
+		$account : Account(eval(
+			!inquiryService.isAccountNumberUnique($account)))
+	then
+		error(kcontext, $account);
+end
