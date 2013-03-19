@@ -15,7 +15,7 @@ import org.drools.spi.Evaluator;
 import org.drools.spi.FieldValue;
 import org.drools.spi.InternalReadAccessor;
 
-//note that this cannot be converted to new api because evaluetor definition is a marker interface and it doesn;t have any methods
+//note that this cannot be converted to new api because evaluator definition is a marker interface and it doesn't have any methods
 
 // @extract-start 06 20
 public class InstanceEqualsEvaluatorDefinition implements
