@@ -35,17 +35,17 @@ public class InstanceEqualsEvaluatorDefinitionTest {
   TrackingAgendaEventListener trackingAgendaEventListener;
 
   // @extract-start 06 22
-  @BeforeClass
-  public static void setUpClass() throws Exception {
-    KnowledgeBuilderConfiguration builderConf =
-      KnowledgeBuilderFactory.newKnowledgeBuilderConfiguration();
-    builderConf.setOption(EvaluatorOption.get(
-        "instanceEquals",
-        new InstanceEqualsEvaluatorDefinition()));
+@BeforeClass
+public static void setUpClass() throws Exception {
+  KnowledgeBuilderConfiguration builderConf =
+   KnowledgeBuilderFactory.newKnowledgeBuilderConfiguration();
+  builderConf.setOption(EvaluatorOption.get(
+      "instanceEquals",
+      new InstanceEqualsEvaluatorDefinition()));
 
-    knowledgeBase = DroolsHelper.createKnowledgeBase(null,
-        builderConf, "custom_operator.drl");
-  }
+  knowledgeBase = DroolsHelper.createKnowledgeBase(null,
+      builderConf, "custom_operator.drl");
+}
   // @extract-end
 
   @Before
