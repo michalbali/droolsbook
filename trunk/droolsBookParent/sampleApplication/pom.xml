@@ -1,4 +1,5 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <groupId>droolsbook</groupId>
   <artifactId>sampleApplication</artifactId>
@@ -38,7 +39,7 @@
         </exclusion>
       </exclusions>
     </dependency>
-    
+
     <dependency>
       <groupId>commons-lang</groupId>
       <artifactId>commons-lang</artifactId>
@@ -49,16 +50,16 @@
     </dependency>
     <dependency>
       <groupId>org.drools</groupId>
-      <artifactId>drools-persistence-jpa</artifactId>      
+      <artifactId>drools-persistence-jpa</artifactId>
     </dependency>
-               <dependency>
-                 <groupId>org.jbpm</groupId>
-                 <artifactId>jbpm-persistence-jpa</artifactId>
-               </dependency>
+    <dependency>
+      <groupId>org.jbpm</groupId>
+      <artifactId>jbpm-persistence-jpa</artifactId>
+    </dependency>
 
     <dependency>
-        <groupId>org.slf4j</groupId>
-        <artifactId>slf4j-log4j12</artifactId>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-log4j12</artifactId>
     </dependency>
     <dependency>
       <groupId>org.slf4j</groupId>
@@ -124,12 +125,6 @@
     <dependency>
       <groupId>org.hibernate</groupId>
       <artifactId>hibernate-core</artifactId>
-      <!-- <exclusions>
-        <exclusion>
-          <groupId>javax.transaction</groupId>
-          <artifactId>jta</artifactId>
-        </exclusion>
-      </exclusions> -->
     </dependency>
 
     <!-- HSQLDB -->
@@ -139,14 +134,9 @@
     </dependency>
 
     <!-- Web -->
-    <dependency>
-      <groupId>javax.servlet</groupId>
-      <artifactId>jstl</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>taglibs</groupId>
-      <artifactId>standard</artifactId>
-    </dependency>
+    <!-- <dependency> <groupId>javax.servlet</groupId> <artifactId>jstl</artifactId> 
+      </dependency> <dependency> <groupId>taglibs</groupId> <artifactId>standard</artifactId> 
+      </dependency> -->
 
     <dependency>
       <groupId>org.jmock</groupId>
@@ -164,11 +154,12 @@
         <configuration>
           <useProjectReferences>false</useProjectReferences>
           <downloadSources>true</downloadSources>
-          <!-- <projectNameTemplate>[artifactId]-[version]</projectNameTemplate>  -->
+          <!-- <projectNameTemplate>[artifactId]-[version]</projectNameTemplate> -->
           <wtpmanifest>true</wtpmanifest>
-          <!--<wtpapplicationxml>true</wtpapplicationxml>
-          --><wtpversion>2.0</wtpversion>
-          <manifest>${basedir}/src/main/resources/META-INF/MANIFEST.MF</manifest>
+          <!--<wtpapplicationxml>true</wtpapplicationxml> -->
+          <wtpversion>2.0</wtpversion>
+          <manifest>${basedir}/src/main/resources/META-INF/MANIFEST.MF
+          </manifest>
           <!-- useProjectReferences = false ? -->
         </configuration>
       </plugin>

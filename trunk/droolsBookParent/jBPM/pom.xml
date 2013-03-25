@@ -56,11 +56,11 @@
     		<artifactId>h2</artifactId>
     	</dependency>  
     	
-    	<dependency>
+    	<!-- <dependency>
           <groupId>org.subethamail</groupId>
           <artifactId>subethasmtp-wiser</artifactId>
           <scope>test</scope>
-    	</dependency>     
+    	</dependency>  -->    
     	
     	<dependency>
 			<groupId>org.jmock</groupId>
