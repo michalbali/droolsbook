@@ -1,4 +1,4 @@
-= Examples for the book - "Drools JBoss Rules 5.0 Developer's Guide" = 
+= Examples for the book - "Drools JBoss Rules 5.5 Developer's Guide" = 
 More information about this book can be found at http://www.packtpub.com/drools-jboss-rules-5-0-developers-guide/book
 
 == Contents ==
@@ -10,7 +10,7 @@ One chapter in the book corresponds to one or more projects.
  * chapter 5 human readable rules - projects dsl, decision_tables, ruleflow
  * chapter 6 stateful session - project stateful
  * chapter 7 complex event processing - project cep
- * chapter 8 drools flow - project droolsflow
+ * chapter 8 jBPM - project jBPM
  * chapter 9 sample application - project sampleApplication
  * chapter 10 testing - project testing
  * chapter 11 integration - project integration
@@ -31,4 +31,4 @@ One chapter in the book corresponds to one or more projects.
 You can also build all examples and run all tests from command line. Go to the droolsBookParent project and execute:
 `mvn clean install` 
 
-The examples were developed and tested with JDK 1.6.0_14, Maven 2.0.9  
+The examples were developed and tested with JDK 1.6.0_27, Maven 3.0.4  
