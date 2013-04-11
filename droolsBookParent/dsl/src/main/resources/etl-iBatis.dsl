@@ -9,7 +9,7 @@
 [condition][]unknown conversion value for this currency = not( String() from getConversionToEurFrom((String)$Account1["currency"]) )
 
 [condition][]- has no {field}=this["{field}"] == null
-[condition][]- same as {object}-{id} = this == ${object}{id}, eval( ${object}1 != ${object}2 )
+[condition][]- {object}-{id1} same as {object}-{id2} = this == ${object}{id2}, eval( ${object}{id1} != ${object}{id2} )
 [condition][]- country is one of {country_list} = this["country"] in ({country_list})
 [condition][]- country is not normalized = !($Address1.get("country") instanceof Address.Country)
 [condition][]- "{field}" is same as in {object}-{id:\d+}=this["{field}"] == ${object}{id}["{field}"], eval( ${object}1 != ${object}2 )

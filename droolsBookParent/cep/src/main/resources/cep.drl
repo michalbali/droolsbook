@@ -103,6 +103,7 @@ end
 */
 
 declare AccountInfo
+    @propertyReactive
 	number : Long
 	averageBalance : BigDecimal
 	averageAmount : BigDecimal
@@ -148,7 +149,7 @@ java.lang.RuntimeException: Rule Compilation error : [Rule name='averageBalanceO
 	at org.eclipse.jdt.internal.junit.runner.RemoteTestRunner.main(RemoteTestRunner.java:197)
 */
 rule averageBalanceOver30Days
-no-loop true
+//no-loop true
   when
     $account : Account( )
     // @extract-start 06 28
@@ -306,5 +307,15 @@ rule blackListToCheck
 	then
 		$transaction.setStatus(Transaction.Status.DENIED);
 		//.. do something else?		
+end
+
+
+rule averageAmountOver30Days
+	when
+		$accountInfo : AccountInfo( averageAmount == null )
+	then
+		modify($accountInfo) {
+			setAverageAmount(BigDecimal.ZERO)
+		};
 end
 

@@ -67,7 +67,7 @@ rule twoEqualAddressesDifferentInstance
 	when
 		There is legacy Address-1
 		There is legacy Address-2
-		- same as legacy Address-1		
+		- Address-2 same as legacy Address-1		
 	then
 		remove legacy Address-2
 		Display WARNING for legacy Address-2 
