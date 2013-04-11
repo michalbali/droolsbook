@@ -142,7 +142,7 @@ public class StatefulServiceImpl implements StatefulService,
     out.defaultWriteObject();
 
     DroolsObjectOutputStream droolsOut = 
-        new DroolsObjectOutputStream((OutputStream) out);
+        new DroolsObjectOutputStream(out);
     droolsOut.writeObject(knowledgeBase);
 
     Marshaller marshaller = createSerializableMarshaller(
@@ -157,7 +157,7 @@ public class StatefulServiceImpl implements StatefulService,
     in.defaultReadObject();
 
     DroolsObjectInputStream droolsIn = 
-        new DroolsObjectInputStream((InputStream) in);
+        new DroolsObjectInputStream(in);
     this.knowledgeBase = (KnowledgeBase)droolsIn.readObject();
 
     Marshaller marshaller = createSerializableMarshaller(
@@ -193,7 +193,7 @@ public class StatefulServiceImpl implements StatefulService,
     out.defaultWriteObject();
 
     DroolsObjectOutputStream droolsOut = 
-        new DroolsObjectOutputStream((OutputStream) out);
+        new DroolsObjectOutputStream( out);
     droolsOut.writeObject(knowledgeBase);
   }
   // @extract-end
@@ -204,7 +204,7 @@ public class StatefulServiceImpl implements StatefulService,
     in.defaultReadObject();
 
     DroolsObjectInputStream droolsIn = 
-        new DroolsObjectInputStream((InputStream) in);
+        new DroolsObjectInputStream(in);
     this.knowledgeBase = (KnowledgeBase)droolsIn.readObject();
 
     this.reportFactory = new DefaultReportFactory();
