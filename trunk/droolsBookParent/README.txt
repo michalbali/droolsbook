@@ -1,19 +1,19 @@
 = Examples for the book - "Drools JBoss Rules 5.5 Developer's Guide" = 
-More information about this book can be found at http://www.packtpub.com/drools-jboss-rules-5-0-developers-guide/book
+More information about this book can be found at http://www.packtpub.com/drools-jboss-rules-5-5-developers-guide/book
 
 == Contents ==
 The following is a list of projects that this archive contains.
 One chapter in the book corresponds to one or more projects. 
 
- * chapter 3 validation - project validation
- * chapter 4 data transformation - project etl_iBatis
- * chapter 5 human readable rules - projects dsl, decision_tables, ruleflow
- * chapter 6 stateful session - project stateful
+ * chapter 3 validating - project validation
+ * chapter 4 transforming data - project etl_iBatis
+ * chapter 5 creating human readable rules - projects dsl, decision_tables, ruleflow
+ * chapter 6 working with stateful session - project stateful
  * chapter 7 complex event processing - project cep
- * chapter 8 jBPM - project jBPM
- * chapter 9 sample application - project sampleApplication
+ * chapter 8 defining processes with jBPM - project jBPM
+ * chapter 9 building sample application - project sampleApplication
  * chapter 10 testing - project testing
- * chapter 11 integration - project integration
+ * chapter 11 integrating - project integration
  * appendix custom operator - project cep
  * other projects:
    * project bankingcore - contains banking domain model, reporting model, some service interfaces, some utility classes
