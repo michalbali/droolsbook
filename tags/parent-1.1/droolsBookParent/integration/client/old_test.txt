@@ -1,0 +1,8 @@
+knowledgebase-response
+	inOutFacts
+		named-fact
+			fact specialty==FATAL currentCases==0 @class teamallocation.Team id==x 
+			fact currentCases==0 @class teamallocation.Team id==y 
+	globals
+		named-fact
+			fact explanation=="Hi value claim" @class teamallocation.Assignment teamName==GOLD id=a

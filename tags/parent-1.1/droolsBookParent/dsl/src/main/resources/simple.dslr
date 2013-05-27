@@ -1,0 +1,27 @@
+// @extract-start 04 01
+package droolsbook.dsl;
+import droolsbook.bank.model.*;
+expander simple.dsl
+rule "hello rule"
+  when
+    There is a Customer with firstName "David"
+  then
+    Greet Customer
+end
+// @extract-end
+
+
+declare License
+
+end
+
+rule "transformationFunction"
+  when
+    There is a License
+  then
+>  	System.out.println("ok");
+end
+
+
+
+

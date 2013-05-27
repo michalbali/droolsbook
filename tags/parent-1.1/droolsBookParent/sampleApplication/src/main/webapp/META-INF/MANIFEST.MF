@@ -1,0 +1,48 @@
+Manifest-Version: 1.0
+Class-Path: activation-1.1.jar ant-1.8.2.jar ant-launcher-1.8.2.jar an
+ tlr-2.7.7.jar antlr-3.3.jar antlr-runtime-3.3.jar aopalliance-1.0.jar
+  asm-3.1.jar aspectjrt-1.7.1.jar aspectjweaver-1.7.1.jar bankingcore-
+ 1.1-SNAPSHOT.jar bcmail-jdk14-138.jar bcprov-jdk14-138.jar boilerpipe
+ -1.1.0.jar commons-codec-1.2.jar commons-collections-3.2.1.jar common
+ s-compress-1.1.jar commons-dbcp-1.2.2.jar commons-exec-1.0.1.jar comm
+ ons-httpclient-3.1.jar commons-io-1.4.jar commons-lang-2.6.jar common
+ s-net-2.0.jar commons-pool-1.3.jar concurrent-1.3.4.jar cxf-api-2.4.4
+ .jar cxf-common-utilities-2.4.4.jar cxf-rt-bindings-soap-2.4.4.jar cx
+ f-rt-bindings-xml-2.4.4.jar cxf-rt-core-2.4.4.jar cxf-rt-databinding-
+ jaxb-2.4.4.jar cxf-rt-frontend-jaxws-2.4.4.jar cxf-rt-frontend-simple
+ -2.4.4.jar cxf-rt-transports-common-2.4.4.jar cxf-rt-transports-http-
+ 2.4.4.jar cxf-rt-ws-addr-2.4.4.jar cxf-tools-common-2.4.4.jar decisio
+ n_tables-1.1-SNAPSHOT.jar derby-10.5.3.0_1.jar dom4j-1.6.1.jar drools
+ -ant-5.5.0.Final.jar drools-compiler-5.5.0.Final.jar drools-core-5.5.
+ 0.Final.jar drools-decisiontables-5.5.0.Final.jar drools-persistence-
+ jpa-5.5.0.Final.jar drools-spring-5.5.0.Final.jar drools-templates-5.
+ 5.0.Final.jar drools-verifier-5.5.0.Final.jar ecj-3.5.1.jar freemarke
+ r-2.3.19.jar geronimo-javamail_1.4_spec-1.7.1.jar geronimo-stax-api_1
+ .0_spec-1.0.1.jar google-collections-1.0.jar guava-r06.jar h2-1.3.170
+ .jar hibernate-commons-annotations-4.0.1.Final.jar hibernate-core-4.1
+ .9.Final.jar hibernate-entitymanager-4.1.9.Final.jar hibernate-jpa-2.
+ 0-api-1.0.1.Final.jar integration-1.1-SNAPSHOT.jar itext-2.1.2.jar ja
+ ckrabbit-api-2.2.8.jar jackrabbit-core-2.2.8.jar jackrabbit-jcr-commo
+ ns-2.2.8.jar jackrabbit-spi-2.2.8.jar jackrabbit-spi-commons-2.2.8.ja
+ r javassist-3.17.1-GA.jar jaxb-impl-2.1.13.jar jaxb-xjc-2.1.13.jar jb
+ oss-logging-3.1.0.GA.jar jboss-transaction-api_1.1_spec-1.0.0.Final.j
+ ar jBPM-1.1-SNAPSHOT.jar jbpm-bpmn2-5.4.0.Final.jar jbpm-flow-5.4.0.F
+ inal.jar jbpm-flow-builder-5.4.0.Final.jar jbpm-human-task-core-5.4.0
+ .Final.jar jbpm-persistence-jpa-5.4.0.Final.jar jbpm-workitems-5.4.0.
+ Final.jar jcl-over-slf4j-1.6.4.jar jcr-2.0.jar jdom-1.0.jar joda-time
+ -2.1.jar jstl-1.2.jar jta-1.1.jar jxl-2.6.10.jar knowledge-api-5.5.0.
+ Final.jar knowledge-internal-api-5.5.0.Final.jar log4j-1.2.16.jar luc
+ ene-core-2.4.1.jar mail-1.4.jar metadata-extractor-2.4.0-beta-1.jar m
+ vel2-2.1.3.Final.jar neethi-3.0.2.jar netcdf-4.2-min.jar poi-3.7.jar 
+ poi-ooxml-3.7.jar poi-ooxml-schemas-3.7.jar poi-scratchpad-3.7.jar pr
+ otobuf-java-2.4.1.jar rome-1.0.jar slf4j-api-1.6.4.jar slf4j-log4j12-
+ 1.6.4.jar smack-3.1.0.jar spring-aop-3.2.1.RELEASE.jar spring-beans-3
+ .2.1.RELEASE.jar spring-context-3.2.1.RELEASE.jar spring-core-3.2.1.R
+ ELEASE.jar spring-expression-3.2.1.RELEASE.jar spring-jdbc-3.2.1.RELE
+ ASE.jar spring-orm-3.2.1.RELEASE.jar spring-tx-3.2.1.RELEASE.jar spri
+ ng-web-3.2.1.RELEASE.jar spring-webmvc-3.2.1.RELEASE.jar standard-1.1
+ .2.jar stax2-api-3.1.1.jar stringtemplate-3.2.1.jar tagsoup-1.2.jar t
+ ika-core-0.8.jar tika-parsers-0.8.jar validation-1.1-SNAPSHOT.jar woo
+ dstox-core-asl-4.1.1.jar wsdl4j-1.6.2.jar xml-apis-1.0.b2.jar xml-res
+ olver-1.2.jar xmlbeans-2.3.0.jar xmlschema-core-2.0.2.jar
+

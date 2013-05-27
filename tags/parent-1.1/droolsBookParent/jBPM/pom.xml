@@ -1,0 +1,79 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>droolsbook</groupId>
+	<artifactId>jBPM</artifactId>
+	<packaging>jar</packaging>
+	<name>jBPM</name>
+	<parent>
+		<groupId>droolsbook</groupId>
+		<artifactId>parent</artifactId>
+		<version>1.1</version>
+	</parent>
+	<dependencies>
+		<dependency>
+			<groupId>droolsbook</groupId>
+			<artifactId>bankingcore</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>commons-lang</groupId>
+			<artifactId>commons-lang</artifactId>
+		</dependency>
+		
+    
+        <dependency>
+          <groupId>org.drools</groupId>
+          <artifactId>drools-persistence-jpa</artifactId>
+        </dependency>
+         <dependency>
+          <groupId>org.drools</groupId>
+          <artifactId>drools-core</artifactId>
+        </dependency>
+        <dependency>
+          <groupId>org.jbpm</groupId>
+          <artifactId>jbpm-persistence-jpa</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.jbpm</groupId>
+            <artifactId>jbpm-flow</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.jbpm</groupId>
+            <artifactId>jbpm-flow-builder</artifactId>
+        </dependency>
+        <dependency>
+          <groupId>org.jbpm</groupId>
+          <artifactId>jbpm-human-task-core</artifactId>
+        </dependency>
+    	
+    	<!-- Hibernate -->
+    	<dependency>
+    		<groupId>org.hibernate</groupId>
+    		<artifactId>hibernate-entitymanager</artifactId>
+    	</dependency>
+    	<!-- HSQLDB -->
+    	<dependency>
+    		<groupId>com.h2database</groupId>
+    		<artifactId>h2</artifactId>
+    	</dependency>  
+    	
+    	<!-- <dependency>
+          <groupId>org.subethamail</groupId>
+          <artifactId>subethasmtp-wiser</artifactId>
+          <scope>test</scope>
+    	</dependency>  -->    
+    	
+    	<dependency>
+			<groupId>org.jmock</groupId>
+			<artifactId>jmock-junit4</artifactId>
+		</dependency>	
+    
+        <dependency>
+            <groupId>org.jbpm</groupId>
+            <artifactId>jbpm-bpmn2</artifactId>
+            <scope>test</scope>
+            <classifier>tests</classifier>
+        </dependency>
+
+        
+	</dependencies>
+</project>

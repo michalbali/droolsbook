@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+  xmlns:drools="http://drools.org/schema/drools-spring"
+  xsi:schemaLocation="
+   http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.2.xsd
+   http://drools.org/schema/drools-spring http://drools.org/schema/drools-spring-1.7.0.xsd">
+
+  <drools:kbase id="validationKnowledgeBase">
+    <drools:resources>
+      <drools:resource type="DRL" 
+        source="classpath:validation.drl" />
+    </drools:resources>
+  </drools:kbase>
+
+  <drools:ksession id="validationSession" type="stateful"
+    kbase="validationKnowledgeBase"  >
+    <drools:agendaEventListener>
+      <bean class="org.drools.event.rule.DebugAgendaEventListener" />
+    </drools:agendaEventListener>
+    <drools:batch>
+      <drools:set-global identifier="reportFactory">
+        <bean class="droolsbook.bank.service.impl.DefaultReportFactory" />
+      </drools:set-global>
+      <drools:set-global identifier="validationReport">
+        <bean class="droolsbook.bank.service.impl.DefaultValidationReport" />
+      </drools:set-global>  
+      <drools:insert-object ref="customer" />
+      <drools:fire-all-rules />
+   </drools:batch>
+  </drools:ksession>   
+  
+  <bean id="customer" class="droolsbook.bank.model.Customer"/>
+</beans>

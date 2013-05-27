@@ -1,0 +1,69 @@
+package droolsbook.stateful.fraudulenttransactions
+
+import droolsbook.bank.model.Customer
+import droolsbook.bank.model.Account
+import droolsbook.bank.model.Transaction
+
+declare SuspiciousTransaction
+	transaction : Transaction
+end
+
+declare RiskFactor
+	unusualDate : int
+	unusualLocation : int
+end
+
+// @extract-start 05 19
+rule notification 
+	when
+		$transaction : Transaction( )
+		Notification( transaction == $transaction )		
+	then
+		insertLogical(new SuspiciousTransaction($transaction))
+end
+// @extract-end
+
+rule unusualDateTime
+	when
+		$transaction : Transaction( )
+		RiskFactor( unusualDate > 10, 
+			transaction == $transaction )		
+	then
+		insertLogical(new SuspiciousTransaction($transaction))
+end
+
+// @extract-start 05 20
+rule unusualLocation
+	when
+		$transaction : Transaction( )
+		RiskFactor( unusualLocation > 10, 
+			transaction == $transaction )		
+	then
+		insertLogical(new SuspiciousTransaction($transaction))
+end
+// @extract-end
+
+
+
+// @extract-start 05 21
+rule freezeAccount
+salience -1000
+	when
+		$from : Account(  )		
+		$transaction : Transaction( from == $from )
+		SuspiciousTransaction( transaction == $transaction)
+	then
+		$from.setStatus(Account.Status.ON_HOLD);
+end
+// @extract-end
+
+
+rule transferMoney
+	when
+		$from : Account(  )
+		$to : Account(  )
+		$transaction : Transaction( from == $from, to == $to )
+		not SuspiciousTransaction transaction == $transaction)
+	then
+		//do transfer		
+end

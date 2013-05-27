@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xmlns:drools="http://drools.org/schema/drools-spring"
+  xsi:schemaLocation="
+       http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.2.xsd
+       http://drools.org/schema/drools-spring http://drools.org/schema/drools-spring-1.3.0.xsd">
+
+<drools:grid-node id="node1"/>
+
+<drools:kbase id="interestCalculationKB" node="node1">
+  <drools:resources>
+    <drools:resource type="DTABLE"
+      source="classpath:interest calculation.xls">      
+      <drools:decisiontable-conf input-type="XLS"
+        worksheet-name="Sheet1" />
+    </drools:resource>
+  </drools:resources>  
+</drools:kbase>
+
+<drools:ksession id="interestCalcSession" type="stateless" 
+  kbase="interestCalculationKB" node="node1"/>
+  
+  
+  <!-- Builds the routes that makes the ksessesions available as services -->
+  <import resource="classpath:camel-server.xml" />
+
+</beans>

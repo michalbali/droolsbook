@@ -1,0 +1,321 @@
+package droolsbook.cep
+
+import droolsbook.cep.bank.model.TransactionCreatedEvent
+import droolsbook.cep.bank.model.AccountUpdatedEvent
+import droolsbook.cep.bank.model.Account
+import droolsbook.cep.bank.model.LostCardEvent
+import droolsbook.cep.bank.model.SuspiciousAccount
+import droolsbook.cep.bank.model.SuspiciousTransaction
+import droolsbook.cep.bank.model.TransactionEvent
+import droolsbook.cep.bank.model.TransactionCompletedEvent
+import droolsbook.cep.bank.model.SuspiciousAccount.SuspiciousAccountSeverity
+import droolsbook.cep.bank.model.SuspiciousTransaction.SuspiciousTransactionSeverity
+import droolsbook.bank.model.Address
+import droolsbook.bank.model.Customer
+import droolsbook.bank.model.Transaction
+
+import java.util.List
+import java.math.BigDecimal
+
+global List accountNumberBlackList
+
+declare LostCardEvent
+	@role( event )
+end
+
+// @extract-start 06 06
+declare TransactionCreatedEvent
+	@role( event )
+end
+// @extract-end 
+
+declare TransactionCompletedEvent
+	@role( event )
+end
+
+declare AccountUpdatedEvent
+	@role( event )
+end
+
+declare SuspiciousAccount
+	@role( event )
+end
+
+declare SuspiciousTransaction
+	@role( event )
+end
+
+// @extract-start 06 01
+rule notification
+	when
+		$account : Account( status != Account.Status.BLOCKED )
+		LostCardEvent( accountNumber == $account.number ) 
+		  from entry-point LostCardStream
+	then
+		modify($account) {
+			setStatus(Account.Status.BLOCKED)
+		};
+end
+// @extract-end 
+
+//fire on at leat three withdrawals happening over 3 minutes 
+//that leave an account with 10% of its average balance over a month
+// @extract-start 06 09 
+rule sequenceOfIncreasingWithdrawals
+  when
+    $account:Account($number : number)
+    $t1:TransactionCreatedEvent(fromAccountNumber == $number)
+      from entry-point TransactionStream    
+    $t2:TransactionCreatedEvent(amount > $t1.amount, 
+      fromAccountNumber == $number, this after[0, 3m] $t1)
+      from entry-point TransactionStream
+    not (TransactionCreatedEvent(fromAccountNumber == $number,
+      this after $t1, this before $t2 ) 
+      from entry-point TransactionStream)
+    $t3:TransactionCreatedEvent(amount > $t2.amount, 
+      fromAccountNumber == $number, this after[0, 3m] $t2 )
+      from entry-point TransactionStream
+    not (TransactionCreatedEvent(fromAccountNumber == $number,
+      this after $t2, this before $t3 ) 
+      from entry-point TransactionStream)
+    AccountInfo(number == $number, $t1.amount + $t2.amount
+      + $t3.amount > averageBalance * BigDecimal.valueOf(0.9))
+  then
+    insert(new SuspiciousAccount($number, 
+      SuspiciousAccountSeverity.MAJOR));
+    insert(new SuspiciousTransaction($t1.transactionUuid, 
+      SuspiciousTransactionSeverity.MAJOR));
+    insert(new SuspiciousTransaction($t2.transactionUuid, 
+      SuspiciousTransactionSeverity.MAJOR));
+    insert(new SuspiciousTransaction($t3.transactionUuid, 
+      SuspiciousTransactionSeverity.MAJOR));
+end 
+// @extract-end
+
+/*
+// @extract-start 06 23
+declare AccountInfo
+	number : Long
+	averageBalance : BigDecimal
+	averageAmount : BigDecimal
+end
+// @extract-end
+*/
+
+declare AccountInfo
+    @propertyReactive
+	number : Long
+	averageBalance : BigDecimal
+	averageAmount : BigDecimal
+	averageNumberOfTransactions : BigDecimal
+	numberOfTransactions1Day : Long
+end
+
+/*
+// @extract-start 06 18
+rule averageBalanceOver30Days
+no-loop true
+  when
+    $account : Account( )
+    accumulate( AccountUpdatedEvent( accountNumber == 
+      $account.number, $balance : balance ) over 
+      window:time( 30d ) from entry-point AccountStream,
+      $averageBalance : average($balance) )
+    $accountInfo : AccountInfo( number == $account.number )
+  then
+    modify($accountInfo) {
+    	setAverageBalance($averageBalance)
+    };
+end
+// @extract-end
+java.lang.RuntimeException: Rule Compilation error : [Rule name='averageBalanceOver30Days']
+	droolsbook/cep/Rule_averageBalanceOver30Days_2a1f6771c0a0480e8978dd7c00275a19.java (15:1582) : The method setAverageBalance(BigDecimal) in the type AccountInfo is not applicable for the arguments (Number)
+	at droolsbook.utils.DroolsHelper.createKnowledgeBase(DroolsHelper.java:58)
+	at droolsbook.cep.CepTest.setUpClass(CepTest.java:124)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:57)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.lang.reflect.Method.invoke(Method.java:616)
+	at org.junit.runners.model.FrameworkMethod$1.runReflectiveCall(FrameworkMethod.java:45)
+	at org.junit.internal.runners.model.ReflectiveCallable.run(ReflectiveCallable.java:15)
+	at org.junit.runners.model.FrameworkMethod.invokeExplosively(FrameworkMethod.java:42)
+	at org.junit.internal.runners.statements.RunBefores.evaluate(RunBefores.java:27)
+	at org.junit.runners.ParentRunner.run(ParentRunner.java:300)
+	at org.eclipse.jdt.internal.junit4.runner.JUnit4TestReference.run(JUnit4TestReference.java:50)
+	at org.eclipse.jdt.internal.junit.runner.TestExecution.run(TestExecution.java:38)
+	at org.eclipse.jdt.internal.junit.runner.RemoteTestRunner.runTests(RemoteTestRunner.java:467)
+	at org.eclipse.jdt.internal.junit.runner.RemoteTestRunner.runTests(RemoteTestRunner.java:683)
+	at org.eclipse.jdt.internal.junit.runner.RemoteTestRunner.run(RemoteTestRunner.java:390)
+	at org.eclipse.jdt.internal.junit.runner.RemoteTestRunner.main(RemoteTestRunner.java:197)
+*/
+rule averageBalanceOver30Days
+//no-loop true
+  when
+    $account : Account( )
+    // @extract-start 06 28
+    accumulate( AccountUpdatedEvent( accountNumber == 
+      $account.number, $balance : balance ) over 
+      window:time( 30d ) from entry-point AccountStream,
+      $averageBalance : bigDecimalAverage($balance) )
+    // @extract-end  
+    $accountInfo : AccountInfo( number == $account.number )		
+  then
+    modify($accountInfo) {
+    	setAverageBalance((BigDecimal)$averageBalance)
+    };
+end
+/*
+// using full accumulate (not used in book as its use is discouraged)
+rule averageBalanceOver30Days
+  when
+    $account : Account( )
+    $averageBalance : BigDecimal( ) from accumulate(
+      AccountUpdatedEvent( accountNumber == $account.number, 
+      $balance : balance ) over window:time( 30d ) 
+      from entry-point AccountStream, 
+      init( BigDecimal total = BigDecimal.ZERO; ),
+      action( total = total.add($balance); ),
+      reverse( total = total.subtract($balance); ),
+      result(total) )
+    $accountInfo : AccountInfo( number == $account.number )		
+  then
+    modify($accountInfo) {
+    	setAverageBalance($averageBalance)
+    };
+end
+*/
+
+
+
+query averageBalanceOverMonthQuery (Long $accountNumber)
+	AccountInfo( number == $accountNumber, 
+		$averageBalance : averageBalance )
+end
+
+
+//////////
+query averageBalanceOverMonth(Long accountNumber, Number averageAmount)
+  accumulate( TransactionCompletedEvent( accountNumber := fromAccountNumber, $amount : amount ) over 
+    window:time( 30d ) from entry-point TransactionStream, 
+    averageAmount : average( $amount ) ) //not sure if we should use ':=' here
+  //anyway the following form works just fine:  
+  //Number( averageAmount := doubleValue ) from accumulate( TransactionCompletedEvent( accountNumber := fromAccountNumber, $amount : amount ) over 
+  //	 window:time( 30d ) from entry-point TransactionStream, average( $amount ) )
+end
+//and the usage is:
+ 	//$account : Account( $num : number )
+    //averageBalanceOverMonth($num := accountNumber, $averageAmount := averageAmount)
+    //...
+/////////
+
+//similar to sequenceOfWithdrawals, however in this case the amounts
+// transfered are averaged over month and if there are two consecutive 
+//withdrawals each of more than three times the average -> raise suspicion
+//note: this rule will fire twice for two transactions (is that bad?)
+// @extract-start 06 07  
+rule twoLargeWithdrawals
+dialect "mvel"
+  when
+    $account : Account( )
+    accumulate( TransactionCompletedEvent( fromAccountNumber
+      == $account.number, $amount : amount ) over 
+      window:time( 30d ) from entry-point TransactionStream, 
+      $averageAmount : average( $amount ) )
+    $t1 : TransactionCreatedEvent( fromAccountNumber == 
+      $account.number, amount > $averageAmount * 3.00 ) over 
+      window:time(90s) from entry-point TransactionStream
+    $t2 : TransactionCreatedEvent( this != $t1, 
+      fromAccountNumber == $account.number, 
+      amount > $averageAmount * 3.00 ) over 
+      window:time(90s) from entry-point TransactionStream
+  then
+    insert(new SuspiciousAccount($account.number, 
+      SuspiciousAccountSeverity.MINOR));
+    insert(new SuspiciousTransaction($t1.transactionUuid, 
+      SuspiciousTransactionSeverity.MINOR));
+    insert(new SuspiciousTransaction($t2.transactionUuid, 
+      SuspiciousTransactionSeverity.MINOR));
+end
+// @extract-end
+
+
+//high activity on an account
+//this should catch cases with lot of small transactions
+// @extract-start 06 13
+rule highActivity
+  when
+    $account : Account( )
+    $accountInfo : AccountInfo( number == $account.number,
+      numberOfTransactions1Day > averageNumberOfTransactions *
+      BigDecimal.valueOf(5.0), $account.balance < 
+      averageBalance * BigDecimal.valueOf(0.1) )
+  then
+    insert(new SuspiciousAccount($account.getNumber(),
+      SuspiciousAccountSeverity.MINOR));
+end
+// @extract-end
+/*
+query numberOfTransactions1DayQuery(Long accountNumber, 
+    Number sum) 
+  accumulate( TransactionCompletedEvent( accountNumber := 
+    fromAccountNumber ) over window:time(1d) from entry-point
+    TransactionStream; sum : count(1) )
+end
+
+query averageNumberOfTransactionsQuery(Long accountNumber, 
+    Number avg) 
+  Number( avg := doubleValue / 30 ) from accumulate( 
+    TransactionCompletedEvent( accountNumber := fromAccountNumber)
+    over window:time(30d) from entry-point TransactionStream; 
+    count(1) )
+end
+
+rule highActivity
+  when
+    $account : Account( $accountNumber : number )
+    numberOfTransactions1DayQuery( $accountNumber := accountNumber, $numberOfTransactions1Day := sum )
+    //averageNumberOfTransactionsQuery( $accountNumber := accountNumber, $averageNumberOfTransactions := avg )
+    $accountInfo : AccountInfo( number == $accountNumber,
+      $numberOfTransactions1Day > averageNumberOfTransactions *
+      BigDecimal.valueOf(5.0), $account.balance < 
+      averageBalance * BigDecimal.valueOf(0.1) )  
+  then
+    insert(new SuspiciousAccount($account.getNumber(),
+      SuspiciousAccountSeverity.MINOR));
+end
+*/
+
+
+//monitoring & reporting rules
+
+
+// @extract-start 06 04
+query averageBalanceQuery
+  accumulate( Account($balance : balance); 
+    $averageBalance : average($balance) )  
+end
+// @extract-end
+
+query averageBalanceWithInterestQuery
+  Number( $averageBalance : doubleValue ) from accumulate(
+    $account : Account( ), average($account.getBalance().multiply($account.getInterestRate())) )
+end
+
+rule blackListToCheck
+	when
+		$transaction : Transaction( accountTo.number in (accountNumberBlackList) )
+	then
+		$transaction.setStatus(Transaction.Status.DENIED);
+		//.. do something else?		
+end
+
+
+rule averageAmountOver30Days
+	when
+		$accountInfo : AccountInfo( averageAmount == null )
+	then
+		modify($accountInfo) {
+			setAverageAmount(BigDecimal.ZERO)
+		};
+end
+

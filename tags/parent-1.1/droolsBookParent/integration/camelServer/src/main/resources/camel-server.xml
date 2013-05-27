@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:cxf="http://camel.apache.org/schema/cxf"
+       xmlns:jaxrs="http://cxf.apache.org/jaxrs"
+       xsi:schemaLocation="
+       http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
+       http://camel.apache.org/schema/cxf http://camel.apache.org/schema/cxf/camel-cxf.xsd
+       http://cxf.apache.org/jaxrs http://cxf.apache.org/schemas/jaxrs.xsd
+       http://camel.apache.org/schema/spring http://camel.apache.org/schema/spring/camel-spring.xsd
+    ">
+  <import resource="classpath:META-INF/cxf/cxf.xml" />
+  <import resource="classpath:META-INF/cxf/cxf-servlet.xml" />
+  
+  <!--
+   !   Define the server end point.
+   !   Copy and paste this element, changing id and the address, to expose services on different urls.
+   !   Different Camel routes can handle different end point paths.
+    --> 
+  <cxf:rsServer id="rsServer" address="/rest"
+     serviceClass="org.drools.jax.rs.CommandExecutorImpl">
+       <cxf:providers>
+           <bean class="org.drools.jax.rs.CommandMessageBodyReader"/>
+       </cxf:providers>
+  </cxf:rsServer>  
+  
+  <!-- Leave this, as it's needed to make Camel "drools" aware -->
+  <bean id="droolsPolicy" class="org.drools.camel.component.DroolsPolicy" />  
+    
+  <camelContext id="camel" 
+    xmlns="http://camel.apache.org/schema/spring">    
+    <!-- 
+     ! Routes incoming messages from end point id="rsServer".
+     ! Example route unmarshals the messages with json and executes against interestCalcSession.
+     !-->
+     
+    <route>
+       <from uri="cxfrs://bean://rsServer"/>
+       <policy ref="droolsPolicy">
+         <unmarshal ref="json" />
+         <to uri="drools:node1/interestCalcSession" />
+         <marshal ref="json" />
+       </policy>
+    </route>
+  </camelContext>  
+</beans>

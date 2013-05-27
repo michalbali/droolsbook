@@ -1,0 +1,30 @@
+package droolsbook.performance
+
+import droolsbook.bank.model.*; 
+ 
+import java.util.Date;
+import org.joda.time.DateMidnight;
+import org.joda.time.Years;
+
+function int yearsPassedSince(Date date) {
+    return Years.yearsBetween(new DateMidnight(date), 
+    	new DateMidnight()).getYears();
+} 
+ 
+rule accountBalanceAtLeast
+	when
+		$account : Account( balance < 100 )		
+	then		
+		//warning(kcontext, $account);
+		System.out.println("Account");
+end
+
+rule studentWithLowAccountBalance
+	when		
+		$account : Account( balance < 100, 
+			type == Account.Type.STUDENT )
+		$customer : Customer( accounts contains $account )			
+	then
+		System.out.println("Customer " + $customer + 
+		" has student account with low balance");
+end

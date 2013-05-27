@@ -1,0 +1,10 @@
+package droolsbook.performance
+
+import droolsbook.bank.model.*; 
+ 
+rule "accountBalanceAtLeast"
+	when
+		$account : Account( balance < 100 )		
+	then		
+		//warning(kcontext, $account);
+end

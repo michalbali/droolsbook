@@ -1,0 +1,15 @@
+package droolsbook.performance
+
+import droolsbook.bank.model.*; 
+ 
+import java.math.BigDecimal; 
+ 
+global java.util.List list; 
+ 
+ 
+rule accountBalanceAtLeast
+	when
+		$account : Account( balance < 100 )	from entry-point "testpoint"	
+	then		
+		//warning(kcontext, $account);
+end
