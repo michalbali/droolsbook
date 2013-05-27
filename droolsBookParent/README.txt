@@ -1,5 +1,5 @@
 = Examples for the book - "Drools JBoss Rules 5.5 Developer's Guide" = 
-More information about this book can be found at http://www.packtpub.com/drools-jboss-rules-55-developers-guide/book
+More information about this book can be found at http://www.packtpub.com/jboss-rules-5-x-developers-guide/book
 
 == Contents ==
 The following is a list of projects that this archive contains.
